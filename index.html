@@ -6,14 +6,14 @@
     <title>Парк природы «Долина Водопадов»</title>
     
     <!-- Предзагрузка критичных ресурсов -->
-    <link rel="preload" href="css/styles.css" as="style">
-    <link rel="preload" href="js/script.js" as="script">
+    <link rel="preload" href="./css/styles.css" as="style">
+    <link rel="preload" href="./js/script.js" as="script">
     
-    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="./css/styles.css">
 
     <!-- Предзагрузка критичных шрифтов -->
-    <link rel="preload" href="css/fonts/CoreMellow47CnRegular_31.otf" as="font" type="font/otf" crossorigin>
-    <link rel="preload" href="css/fonts/CoreMellow59CpMedium_7.otf" as="font" type="font/otf" crossorigin>
+    <link rel="preload" href="./css/fonts/CoreMellow47CnRegular_31.otf" as="font" type="font/otf" crossorigin>
+    <link rel="preload" href="./css/fonts/CoreMellow59CpMedium_7.otf" as="font" type="font/otf" crossorigin>
         
 </head>
 <body>
@@ -21,19 +21,19 @@
     <section class="hero-section" aria-label="Главный экран парка">
         <!-- Слайдер фонов с lazy loading -->
         <div class="background-slider">
-            <div class="slide active" 
-                 data-bg="images/hero-section/1.JPEG"
-                 role="img" 
+            <div class="slide active"
+                 data-bg="./images/hero-section/1.JPEG"
+                 role="img"
                  aria-label="Пейзаж парка 1">
             </div>
-            <div class="slide" 
-                 data-bg="images/hero-section/b_2.webp"
-                 role="img" 
+            <div class="slide"
+                 data-bg="./images/hero-section/b_2.webp"
+                 role="img"
                  aria-label="Пейзаж парка 2">
             </div>
-            <div class="slide" 
-                 data-bg="images/hero-section/b_3.webp"
-                 role="img" 
+            <div class="slide"
+                 data-bg="./images/hero-section/b_3.webp"
+                 role="img"
                  aria-label="Пейзаж парка 3">
             </div>
         </div>
@@ -42,9 +42,9 @@
         <header class="header" role="banner">
             <div class="header-container">
                 <div class="logo" itemscope itemtype="https://schema.org/Organization">
-                    <img src="images/logo/logo_dolina.png" 
+                    <img src="./images/logo/logo_dolina.png"
                          alt="Логотип Долина Водопадов"
-                         width="80" 
+                         width="80"
                          height="80"
                          loading="lazy"
                          class="logo-img">
@@ -159,12 +159,12 @@
             <div class="gallery-content">
                 <div class="image-gallery" data-gallery="1">
                     <video class="gallery-video" muted playsinline preload="auto" loop autoplay>
-                        <source src="images/1.mp4" type="video/mp4">
+                        <source src="./images/1.mp4" type="video/mp4">
                         Ваш браузер не поддерживает видео.
                     </video>
-                    <div class="gallery-image" style="background-image: url(images/ecotropa-5.webp);"></div>
-                    <div class="gallery-image" style="background-image: url(images/ecotropa-4.webp);"></div>
-                    <div class="gallery-image" style="background-image: url(images/ecotropa-6.webp);"></div>
+                    <div class="gallery-image" style="background-image: url(./images/ecotropa-5.webp);"></div>
+                    <div class="gallery-image" style="background-image: url(./images/ecotropa-4.webp);"></div>
+                    <div class="gallery-image" style="background-image: url(./images/ecotropa-6.webp);"></div>
                 </div>
                 <div class="gallery-controls">
                     <button class="arrow-btn prev-btn" onclick="changeImage(1, -1)">‹</button>
@@ -182,9 +182,9 @@
             </div>
             <div class="gallery-content border">
                 <div class="image-gallery" data-gallery="2">
-                    <div class="gallery-image active" style="background-image: url(images/main-vodopad-1.jpg);"></div>
-                    <div class="gallery-image" style="background-image: url(images/main-vodopad-2.jpg);"></div>
-                    <div class="gallery-image" style="background-image: url(images/main-vodopad-3.webp);"></div>
+                    <div class="gallery-image active" style="background-image: url(./images/main-vodopad-1.jpg);"></div>
+                    <div class="gallery-image" style="background-image: url(./images/main-vodopad-2.jpg);"></div>
+                    <div class="gallery-image" style="background-image: url(./images/main-vodopad-3.webp);"></div>
                 </div>
                 <div class="gallery-controls">
                     <button class="arrow-btn prev-btn" onclick="changeImage(2, -1)">‹</button>
@@ -202,9 +202,9 @@
             </div>
             <div class="gallery-content">
                 <div class="image-gallery" data-gallery="3">
-                    <div class="gallery-image active" style="background-image: url(images/mel-1.webp);"></div>
-                    <div class="gallery-image" style="background-image: url(images/mel-2.webp);"></div>
-                    <div class="gallery-image" style="background-image: url(images/mel-3.webp);"></div>
+                    <div class="gallery-image active" style="background-image: url(./images/mel-1.webp);"></div>
+                    <div class="gallery-image" style="background-image: url(./images/mel-2.webp);"></div>
+                    <div class="gallery-image" style="background-image: url(./images/mel-3.webp);"></div>
                 </div>
                 <div class="gallery-controls">
                     <button class="arrow-btn prev-btn" onclick="changeImage(3, -1)">‹</button>
@@ -222,9 +222,9 @@
             </div>
             <div class="gallery-content border">
                 <div class="image-gallery" data-gallery="4">
-                    <div class="gallery-image active" style="background-image: url(images/saam-1.webp);"></div>
-                    <div class="gallery-image" style="background-image: url(images/saam-2.webp);"></div>
-                    <div class="gallery-image" style="background-image: url(images/saam-3.webp);"></div>
+                    <div class="gallery-image active" style="background-image: url(./images/saam-1.webp);"></div>
+                    <div class="gallery-image" style="background-image: url(./images/saam-2.webp);"></div>
+                    <div class="gallery-image" style="background-image: url(./images/saam-3.webp);"></div>
                 </div>
                 <div class="gallery-controls">
                     <button class="arrow-btn prev-btn" onclick="changeImage(4, -1)">‹</button>
@@ -242,9 +242,9 @@
             </div>
             <div class="gallery-content">
                 <div class="image-gallery" data-gallery="6">
-                    <div class="gallery-image active" style="background-image: url(images/olen-1.webp);"></div>
-                    <div class="gallery-image" style="background-image: url(images/olen-2.webp);"></div>
-                    <div class="gallery-image" style="background-image: url(images/olen-3.webp);"></div>
+                    <div class="gallery-image active" style="background-image: url(./images/olen-1.webp);"></div>
+                    <div class="gallery-image" style="background-image: url(./images/olen-2.webp);"></div>
+                    <div class="gallery-image" style="background-image: url(./images/olen-3.webp);"></div>
                 </div>
                 <div class="gallery-controls">
                     <button class="arrow-btn prev-btn" onclick="changeImage(6, -1)">‹</button>
@@ -262,9 +262,9 @@
             </div>
             <div class="gallery-content border">
                 <div class="image-gallery" data-gallery="7">
-                    <div class="gallery-image active" style="background-image: url(images/cafe-1.webp);"></div>
-                    <div class="gallery-image" style="background-image: url(images/cafe-2.webp);"></div>
-                    <div class="gallery-image" style="background-image: url(images/cafe-3.webp);"></div>
+                    <div class="gallery-image active" style="background-image: url(./images/cafe-1.webp);"></div>
+                    <div class="gallery-image" style="background-image: url(./images/cafe-2.webp);"></div>
+                    <div class="gallery-image" style="background-image: url(./images/cafe-3.webp);"></div>
                 </div>
                 <div class="gallery-controls">
                     <button class="arrow-btn prev-btn" onclick="changeImage(7, -1)">‹</button>
@@ -282,9 +282,9 @@
             </div>
             <div class="gallery-content">
                 <div class="image-gallery" data-gallery="8">
-                    <div class="gallery-image active" style="background-image: url(images/mag-1.webp);"></div>
-                    <div class="gallery-image" style="background-image: url(images/mag-2.webp);"></div>
-                    <div class="gallery-image" style="background-image: url(images/mag-3.webp);"></div>
+                    <div class="gallery-image active" style="background-image: url(./images/mag-1.webp);"></div>
+                    <div class="gallery-image" style="background-image: url(./images/mag-2.webp);"></div>
+                    <div class="gallery-image" style="background-image: url(./images/mag-3.webp);"></div>
                 </div>
                 <div class="gallery-controls">
                     <button class="arrow-btn prev-btn" onclick="changeImage(8, -1)">‹</button>
@@ -332,15 +332,15 @@
                     <div class="reviews-gallery-container">
                         <div class="image-gallery" data-gallery="reviews">
                             <div class="gallery-image active">
-                                <div class="review-image" style="background-image: url('images/pep-1.webp');"></div>
+                                <div class="review-image" style="background-image: url('./images/pep-1.webp');"></div>
                                 <div class="emoji-overlay">😊</div>
                             </div>
                             <div class="gallery-image">
-                                <div class="review-image" style="background-image: url('images/pep-2.webp');"></div>
+                                <div class="review-image" style="background-image: url('./images/pep-2.webp');"></div>
                                 <div class="emoji-overlay">🌟</div>
                             </div>
                             <div class="gallery-image">
-                                <div class="review-image" style="background-image: url('images/pep-3.webp');"></div>
+                                <div class="review-image" style="background-image: url('./images/pep-3.webp');"></div>
                                 <div class="emoji-overlay">👍</div>
                             </div>
                         </div>
@@ -544,9 +544,9 @@
             <!-- Первая колонка - Логотип -->
             <div class="footer-column logo-column">
                 <div class="footer-logo">
-                    <img src="logo_dolina.png" 
+                    <img src="./images/logo/logo_dolina.png"
                          alt="Логотип Долина Водопадов"
-                         width="60" 
+                         width="60"
                          height="60">
                     <div class="logo-text">
                         <span class="logo-name">Долина Водопадов</span>
@@ -698,6 +698,6 @@
     </div>
 
     <!-- Скрипт в конце body для лучшей производительности -->
-    <script src="js/script.js" defer></script>
+    <script src="./js/script.js" defer></script>
 </body>
 </html>
