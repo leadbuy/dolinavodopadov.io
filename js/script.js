@@ -105,8 +105,8 @@ const Utils = {
     // Предзагрузка критичных изображений
     preloadCriticalImages() {
         const criticalImages = [
-            './images/logo5.png',
-            './images/b_1.JPEG'
+            'images/logo5.png',
+            'images/b_1.JPEG'
         ];
         
         criticalImages.forEach(src => {
@@ -805,11 +805,11 @@ const NavigationManager = {
         document.querySelectorAll('a[href^="#"]').forEach(link => {
             link.addEventListener('click', (e) => {
                 const href = link.getAttribute('href');
-                if (href === '#') return;
+                if (href === '#' || !href.startsWith('#')) return;
                 
                 e.preventDefault();
                 
-                const targetId = href;
+                const targetId = href.substring(1); // Убираем # из начала
                 this.scrollToSection(targetId);
             });
         });
@@ -886,67 +886,67 @@ const GalleryManager = {
     },
 
     galleryData: [
-        {
-            type: 'image',
-            src: './images/b_1.jpg',
-            alt: 'Вид на водопад в парке'
-        },
-        {
-            type: 'image',
-            src: './images/b_2.webp',
-            alt: 'Лесная тропа'
-        },
-        {
-            type: 'image',
-            src: './images/ecotropa-4.webp',
-            alt: 'Лесная тропа'
-        },
-        {
-            type: 'image',
-            src: './images/b_3.webp',
-            alt: 'Лесная тропа'
-        },
-        {
-            type: 'image',
-            src: './images/main-vodopad-8.jpg',
-            alt: 'Лесная тропа'
-        },
-        {
-            type: 'image',
-            src: './images/mel-1.webp',
-            alt: 'Лесная тропа'
-        },
-        {
-            type: 'image',
-            src: './images/olen-2.webp',
-            alt: 'Лесная тропа'
-        },
-        {
-            type: 'image',
-            src: './images/orig.jpeg',
-            alt: 'Лесная тропа'
-        },
-        {
-            type: 'image',
-            src: './images/saam-2.webp',
-            alt: 'Лесная тропа'
-        },
-        {
-            type: 'image',
-            src: './images/ecotropa-5.webp',
-            alt: 'Лесная тропа'
-        },
-        {
-            type: 'image',
-            src: './images/most_1.webp',
-            alt: 'Лесная тропа'
-        },
-        {
-            type: 'image',
-            src: './images/saamskaya-derevnya-i-olenya-ferma-1-1.jpg',
-            alt: 'Лесная тропа'
-        }
-    ],
+             {
+                 type: 'image',
+                 src: './images/gallery-section/1.JPG',
+                 alt: 'Вид на водопад в парке'
+             },
+             {
+                 type: 'image',
+                 src: './images/gallery-section/2.JPG',
+                 alt: 'Лесная тропа'
+             },
+             {
+                 type: 'image',
+                 src: './images/gallery-section/3.JPG',
+                 alt: 'Лесная тропа'
+             },
+             {
+                 type: 'image',
+                 src: './images/gallery-section/4.JPG',
+                 alt: 'Лесная тропа'
+             },
+             {
+                 type: 'image',
+                 src: './images/gallery-section/5.JPG',
+                 alt: 'Лесная тропа'
+             },
+             {
+                 type: 'image',
+                 src: './images/gallery-section/0073.jpg',
+                 alt: 'Лесная тропа'
+             },
+             {
+                 type: 'image',
+                 src: './images/gallery-section/0077.jpg',
+                 alt: 'Лесная тропа'
+             },
+             {
+                 type: 'image',
+                 src: './images/gallery-section/0086.jpg',
+                 alt: 'Лесная тропа'
+             },
+             {
+                 type: 'image',
+                 src: './images/gallery-section/0104.jpg',
+                 alt: 'Лесная тропа'
+             },
+             {
+                 type: 'image',
+                 src: './images/gallery-section/0107.jpg',
+                 alt: 'Лесная тропа'
+             },
+             {
+                 type: 'image',
+                 src: './images/gallery-section/0110.jpg',
+                 alt: 'Лесная тропа'
+             },
+             {
+                 type: 'image',
+                 src: './images/gallery-section/0134.jpg',
+                 alt: 'Лесная тропа'
+             }
+         ],
 
     initGalleryElements() {
         this.galleryGrid = document.getElementById('galleryGrid');
@@ -1169,7 +1169,7 @@ const MapManager = {
         if (!mapContainer) return;
         
         mapContainer.innerHTML = `
-            <div style="width:100%;height:100%;background:#f0f0f0;display:flex;align-items:center;justify-content:center;color:#666;border-radius:12px;">
+            <!--<div style="background:#f0f0f0;display:flex;align-items:center;justify-content:center;color:#666;border-radius:12px;">
                 <div style="text-align:center;padding:20px;">
                     <h4 style="margin-bottom:10px;color:#525B4D;">Эко-парк «Долина водопадов»</h4>
                     <p style="margin-bottom:5px;">Координаты: 61.4776° 30.0307°</p>
@@ -1180,7 +1180,7 @@ const MapManager = {
                         Открыть в Яндекс.Картах
                     </a>
                 </div>
-            </div>
+            </div>-->
         `;
     }
 };
