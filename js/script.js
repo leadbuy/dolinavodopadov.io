@@ -105,8 +105,8 @@ const Utils = {
     // Предзагрузка критичных изображений
     preloadCriticalImages() {
         const criticalImages = [
-            'images/logo5.png',
-            'images/b_1.JPEG'
+            './images/logo5.png',
+            './images/b_1.JPEG'
         ];
         
         criticalImages.forEach(src => {
@@ -888,62 +888,62 @@ const GalleryManager = {
     galleryData: [
         {
             type: 'image',
-            src: 'images/b_1.jpg',
+            src: './images/b_1.jpg',
             alt: 'Вид на водопад в парке'
         },
         {
             type: 'image',
-            src: 'images/b_2.webp',
+            src: './images/b_2.webp',
             alt: 'Лесная тропа'
         },
         {
             type: 'image',
-            src: 'images/ecotropa-4.webp',
+            src: './images/ecotropa-4.webp',
             alt: 'Лесная тропа'
         },
         {
             type: 'image',
-            src: 'images/b_3.webp',
+            src: './images/b_3.webp',
             alt: 'Лесная тропа'
         },
         {
             type: 'image',
-            src: 'images/main-vodopad-8.jpg',
+            src: './images/main-vodopad-8.jpg',
             alt: 'Лесная тропа'
         },
         {
             type: 'image',
-            src: 'images/mel-1.webp',
+            src: './images/mel-1.webp',
             alt: 'Лесная тропа'
         },
         {
             type: 'image',
-            src: 'images/olen-2.webp',
+            src: './images/olen-2.webp',
             alt: 'Лесная тропа'
         },
         {
             type: 'image',
-            src: 'images/orig.jpeg',
+            src: './images/orig.jpeg',
             alt: 'Лесная тропа'
         },
         {
             type: 'image',
-            src: 'images/saam-2.webp',
+            src: './images/saam-2.webp',
             alt: 'Лесная тропа'
         },
         {
             type: 'image',
-            src: 'images/ecotropa-5.webp',
+            src: './images/ecotropa-5.webp',
             alt: 'Лесная тропа'
         },
         {
             type: 'image',
-            src: 'images/most_1.webp',
+            src: './images/most_1.webp',
             alt: 'Лесная тропа'
         },
         {
             type: 'image',
-            src: 'images/saamskaya-derevnya-i-olenya-ferma-1-1.jpg',
+            src: './images/saamskaya-derevnya-i-olenya-ferma-1-1.jpg',
             alt: 'Лесная тропа'
         }
     ],
