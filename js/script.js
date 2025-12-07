@@ -888,62 +888,62 @@ const GalleryManager = {
     galleryData: [
              {
                  type: 'image',
-                 src: './images/gallery-section/1.JPG',
+                 src: './images/gallery-section/1.jpg',
                  alt: 'Вид на водопад в парке'
              },
              {
                  type: 'image',
-                 src: './images/gallery-section/2.JPG',
+                 src: './images/gallery-section/2.jpg',
                  alt: 'Лесная тропа'
              },
              {
                  type: 'image',
-                 src: './images/gallery-section/3.JPG',
+                 src: './images/gallery-section/3.jpg',
                  alt: 'Лесная тропа'
              },
              {
                  type: 'image',
-                 src: './images/gallery-section/4.JPG',
+                 src: './images/gallery-section/4.jpg',
                  alt: 'Лесная тропа'
              },
              {
                  type: 'image',
-                 src: './images/gallery-section/5.JPG',
+                 src: './images/gallery-section/5.jpg',
                  alt: 'Лесная тропа'
              },
              {
                  type: 'image',
-                 src: './images/gallery-section/0073.jpg',
+                 src: './images/gallery-section/6.jpg',
                  alt: 'Лесная тропа'
              },
              {
                  type: 'image',
-                 src: './images/gallery-section/0077.jpg',
+                 src: './images/gallery-section/7.jpg',
                  alt: 'Лесная тропа'
              },
              {
                  type: 'image',
-                 src: './images/gallery-section/0086.jpg',
+                 src: './images/gallery-section/8.jpg',
                  alt: 'Лесная тропа'
              },
              {
                  type: 'image',
-                 src: './images/gallery-section/0104.jpg',
+                 src: './images/gallery-section/9.jpg',
                  alt: 'Лесная тропа'
              },
              {
                  type: 'image',
-                 src: './images/gallery-section/0107.jpg',
+                 src: './images/gallery-section/10.jpg',
                  alt: 'Лесная тропа'
              },
              {
                  type: 'image',
-                 src: './images/gallery-section/0110.jpg',
+                 src: './images/gallery-section/11.jpg',
                  alt: 'Лесная тропа'
              },
              {
                  type: 'image',
-                 src: './images/gallery-section/0134.jpg',
+                 src: './images/gallery-section/12.jpg',
                  alt: 'Лесная тропа'
              }
          ],
