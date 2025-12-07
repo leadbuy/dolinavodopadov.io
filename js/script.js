@@ -888,62 +888,62 @@ const GalleryManager = {
     galleryData: [
              {
                  type: 'image',
-                 src: './images/gallery-section/1.jpg',
+                 src: './images/gallery-section/1.jpeg',
                  alt: 'Вид на водопад в парке'
              },
              {
                  type: 'image',
-                 src: './images/gallery-section/2.jpg',
+                 src: './images/gallery-section/2.jpeg',
                  alt: 'Лесная тропа'
              },
              {
                  type: 'image',
-                 src: './images/gallery-section/3.jpg',
+                 src: './images/gallery-section/3.jpeg',
                  alt: 'Лесная тропа'
              },
              {
                  type: 'image',
-                 src: './images/gallery-section/4.jpg',
+                 src: './images/gallery-section/4.jpeg',
                  alt: 'Лесная тропа'
              },
              {
                  type: 'image',
-                 src: './images/gallery-section/5.jpg',
+                 src: './images/gallery-section/5.jpeg',
                  alt: 'Лесная тропа'
              },
              {
                  type: 'image',
-                 src: './images/gallery-section/6.jpg',
+                 src: './images/gallery-section/6.jpeg',
                  alt: 'Лесная тропа'
              },
              {
                  type: 'image',
-                 src: './images/gallery-section/7.jpg',
+                 src: './images/gallery-section/7.jpeg',
                  alt: 'Лесная тропа'
              },
              {
                  type: 'image',
-                 src: './images/gallery-section/8.jpg',
+                 src: './images/gallery-section/8.jpeg',
                  alt: 'Лесная тропа'
              },
              {
                  type: 'image',
-                 src: './images/gallery-section/9.jpg',
+                 src: './images/gallery-section/9.jpeg',
                  alt: 'Лесная тропа'
              },
              {
                  type: 'image',
-                 src: './images/gallery-section/10.jpg',
+                 src: './images/gallery-section/10.jpeg',
                  alt: 'Лесная тропа'
              },
              {
                  type: 'image',
-                 src: './images/gallery-section/11.jpg',
+                 src: './images/gallery-section/11.jpeg',
                  alt: 'Лесная тропа'
              },
              {
                  type: 'image',
-                 src: './images/gallery-section/12.jpg',
+                 src: './images/gallery-section/12.jpeg',
                  alt: 'Лесная тропа'
              }
          ],
@@ -1318,7 +1318,7 @@ class App {
         images.forEach(img => {
             const originalSrc = img.getAttribute('data-src');
             if (originalSrc.includes('webp')) {
-                img.setAttribute('data-src', originalSrc.replace('.webp', '.jpg'));
+                img.setAttribute('data-src', originalSrc.replace('.webp', '.jpeg'));
             }
         });
     }
