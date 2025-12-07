@@ -1,1 +1,0 @@
-# dolinavodopadov.io
