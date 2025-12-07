@@ -20,23 +20,23 @@
     <!-- Главный экран -->
     <section class="hero-section" aria-label="Главный экран парка">
         <!-- Слайдер фонов с lazy loading -->
-                 <div class="background-slider">
-                     <div class="slide active"
-                          data-bg="images/hero-section/1.JPG"
-                          role="img"
-                          aria-label="Пейзаж парка 1">
-                     </div>
-                     <div class="slide"
-                          data-bg="images/hero-section/2.JPG"
-                          role="img"
-                          aria-label="Пейзаж парка 2">
-                     </div>
-                     <div class="slide"
-                          data-bg="images/hero-section/3.JPG"
-                          role="img"
-                          aria-label="Пейзаж парка 3">
-                     </div>
-                 </div>
+        <div class="background-slider">
+            <div class="slide active" 
+                 data-bg="images/hero-section/1.JPEG"
+                 role="img" 
+                 aria-label="Пейзаж парка 1">
+            </div>
+            <div class="slide" 
+                 data-bg="images/hero-section/b_2.webp"
+                 role="img" 
+                 aria-label="Пейзаж парка 2">
+            </div>
+            <div class="slide" 
+                 data-bg="images/hero-section/b_3.webp"
+                 role="img" 
+                 aria-label="Пейзаж парка 3">
+            </div>
+        </div>
 
         <!-- Шапка -->
         <header class="header" role="banner">
@@ -148,164 +148,150 @@
     </section>
 
     <!-- Достопримечательности -->
-         <section id="places" class="attractions-section">
-             <!-- Блок 1: Текст слева, фото справа -->
-             <div class="attraction-block">
-                 <div class="text-content">
-                     <h2>Что ждет туристов в экопарке?</h2>
-                     <p>Карелия - рай изумительной природной прелести, уютно раскинулась на северо-западе России, вблизи границы с Финляндией. Ее зеленые лесные просторы, кристальные озера и живописные пейзажи манят путешественников, жаждущих отдохнуть от городского шума. В Карелии особенно примечателен экологический парк Экотропа, который является уникальным и очаровательным местом для туристов.</p>
-                     <button class="read-more-btn" onclick="openTextModal('Что ждет туристов в экопарке?', 'Экотропа - уникальный экологический парк, изящно вплетенный в ландшафт Карелии, где первозданная экосистема бережно сохраняется с момента основания парка. Здесь обитают многие редкие виды растений и животных, в том числе орлан-белохвост, тетерев и бурый медведь. В парке есть несколько ухоженных пешеходных троп, которые позволяют посетителям исследовать разнообразную флору и фауну региона. Уникальность парка Экотропа заключается в акценте на экотуризме. Здесь представлено множество активностей, направленных на информирование посетителей о важности сохранения окружающей среды и возможности насладиться ее великолепием. Среди самых популярных мероприятий выделяются экскурсии с гидом, где гости могут узнать о истории региона, а также о местных растениях и животных. Помимо природных красот и культурных достопримечательностей, парк Экотропа предоставляет посетителям множество удобств, таких как кемпинги, площадки для пикников и сувенирный магазин. В магазине представлен широкий выбор товаров, среди которых изделия ручной работы, одежда и фермерские продукты, произведенные в Карелии.')">Подробнее</button>
-                 </div>
-                 <div class="gallery-content">
-                     <div class="image-gallery" data-gallery="1">
-                                          <div class="gallery-image active" style="background-image: url(images/attraction-block/block-1/1.JPG);"></div>
-                                          <div class="gallery-image" style="background-image: url(images/attraction-block/block-1/2.JPG);"></div>
-                                          <div class="gallery-image" style="background-image: url(images/attraction-block/block-1/3.jpg);"></div>
-                                          <div class="gallery-image" style="background-image: url(images/attraction-block/block-1/4.JPG);"></div>
-                                          <div class="gallery-image" style="background-image: url(images/attraction-block/block-1/5.JPG);"></div>
-                                          <div class="gallery-image" style="background-image: url(images/attraction-block/block-1/6.JPG);"></div>
-                                          <div class="gallery-image" style="background-image: url(images/attraction-block/block-1/7.JPG);"></div>
-                                          <div class="gallery-image" style="background-image: url(images/attraction-block/block-1/8.JPG);"></div>
-                                      </div>
-                     <div class="gallery-controls">
-                         <button class="arrow-btn prev-btn" onclick="changeImage(1, -1)">‹</button>
-                         <button class="arrow-btn next-btn" onclick="changeImage(1, 1)">›</button>
-                     </div>
-                 </div>
-             </div>
+    <section id="places" class="attractions-section">
+        <!-- Блок 1: Текст слева, фото справа -->
+        <div class="attraction-block">
+            <div class="text-content">
+                <h2>Что ждет туристов в экопарке?</h2>
+                <p>Карелия - рай изумительной природной прелести, уютно раскинулась на северо-западе России, вблизи границы с Финляндией. Ее зеленые лесные просторы, кристальные озера и живописные пейзажи манят путешественников, жаждущих отдохнуть от городского шума. В Карелии особенно примечателен экологический парк Экотропа, который является уникальным и очаровательным местом для туристов.</p>
+                <button class="read-more-btn" onclick="openTextModal('Что ждет туристов в экопарке?', 'Экотропа - уникальный экологический парк, изящно вплетенный в ландшафт Карелии, где первозданная экосистема бережно сохраняется с момента основания парка. Здесь обитают многие редкие виды растений и животных, в том числе орлан-белохвост, тетерев и бурый медведь. В парке есть несколько ухоженных пешеходных троп, которые позволяют посетителям исследовать разнообразную флору и фауну региона. Уникальность парка Экотропа заключается в акценте на экотуризме. Здесь представлено множество активностей, направленных на информирование посетителей о важности сохранения окружающей среды и возможности насладиться ее великолепием. Среди самых популярных мероприятий выделяются экскурсии с гидом, где гости могут узнать о истории региона, а также о местных растениях и животных. Помимо природных красот и культурных достопримечательностей, парк Экотропа предоставляет посетителям множество удобств, таких как кемпинги, площадки для пикников и сувенирный магазин. В магазине представлен широкий выбор товаров, среди которых изделия ручной работы, одежда и фермерские продукты, произведенные в Карелии.')">Подробнее</button>
+            </div>
+            <div class="gallery-content">
+                <div class="image-gallery" data-gallery="1">
+                    <video class="gallery-video" muted playsinline preload="auto" loop autoplay>
+                        <source src="images/1.mp4" type="video/mp4">
+                        Ваш браузер не поддерживает видео.
+                    </video>
+                    <div class="gallery-image" style="background-image: url(images/ecotropa-5.webp);"></div>
+                    <div class="gallery-image" style="background-image: url(images/ecotropa-4.webp);"></div>
+                    <div class="gallery-image" style="background-image: url(images/ecotropa-6.webp);"></div>
+                </div>
+                <div class="gallery-controls">
+                    <button class="arrow-btn prev-btn" onclick="changeImage(1, -1)">‹</button>
+                    <button class="arrow-btn next-btn" onclick="changeImage(1, 1)">›</button>
+                </div>
+            </div>
+        </div>
 
         <!-- Блок 2: Фото слева, текст справа -->
-                 <div class="attraction-block reverse">
-                     <div class="text-content">
-                         <h2>Каскад водопадов на реке Иййоки</h2>
-                         <p>Величественный каскад из семи водопадов, каждый из которых имеет свою уникальную форму и характер. Высота самого большого водопада достигает 15 метров. Водопады создают удивительную атмосферу с мелодичным звуком падающей воды и свежестью в любое время года. Здесь можно сделать потрясающие фотографии и насладиться силой природы. Каждый водопад имеет свое имя и легенду, которую с удовольствием расскажут гиды. Вокруг водопадов проложены оборудованные смотровые площадки с безопасными перилами, позволяющие насладиться видом с разных ракурсов.</p>
-                         <button class="read-more-btn" onclick="openTextModal('Каскад водопадов на реке Иййоки', 'Величественный каскад из семи водопадов, каждый из которых имеет свою уникальную форму и характер. Высота самого большого водопада достигает 15 метров. Водопады создают удивительную атмосферу с мелодичным звуком падающей воды и свежестью в любое время года. Здесь можно сделать потрясающие фотографии и насладиться силой природы. Каждый водопад имеет свое имя и легенду, которую с удовольствием расскажут гиды. Вокруг водопадов проложены оборудованные смотровые площадки с безопасными перилами, позволяющие насладиться видом с разных ракурсов. Весной, во время снеготаяния, водопады особенно полноводны и впечатляющи. Летом здесь прохладно и свежо даже в самую жаркую погоду. Осень окрашивает окружающий лес в золотые и багряные тона, создавая неповторимую живописную картину. Зимой водопады частично замерзают, образуя волшебные ледяные скульптуры.')">Подробнее</button>
-                     </div>
-                     <div class="gallery-content border">
-                         <div class="image-gallery" data-gallery="2">
-                                              <div class="gallery-image active" style="background-image: url(images/attraction-block/block-2/1.JPG);"></div>
-                                              <div class="gallery-image" style="background-image: url(images/attraction-block/block-2/2.JPG);"></div>
-                                              <div class="gallery-image" style="background-image: url(images/attraction-block/block-2/3.JPG);"></div>
-                                              <div class="gallery-image" style="background-image: url(images/attraction-block/block-2/4.JPG);"></div>
-                                              <div class="gallery-image" style="background-image: url(images/attraction-block/block-2/5.JPG);"></div>
-                                              <div class="gallery-image" style="background-image: url(images/attraction-block/block-2/6.JPG);"></div>
-                                              <div class="gallery-image" style="background-image: url(images/attraction-block/block-2/7.jpg);"></div>
-                                              <div class="gallery-image" style="background-image: url(images/attraction-block/block-2/8.jpg);"></div>
-                                              <div class="gallery-image" style="background-image: url(images/attraction-block/block-2/9.JPG);"></div>
-                                          </div>
-                         <div class="gallery-controls">
-                             <button class="arrow-btn prev-btn" onclick="changeImage(2, -1)">‹</button>
-                             <button class="arrow-btn next-btn" onclick="changeImage(2, 1)">›</button>
-                         </div>
-                     </div>
-                 </div>
+        <div class="attraction-block reverse">
+            <div class="text-content">
+                <h2>Каскад водопадов на реке Иййоки</h2>
+                <p>Величественный каскад из семи водопадов, каждый из которых имеет свою уникальную форму и характер. Высота самого большого водопада достигает 15 метров. Водопады создают удивительную атмосферу с мелодичным звуком падающей воды и свежестью в любое время года. Здесь можно сделать потрясающие фотографии и насладиться силой природы. Каждый водопад имеет свое имя и легенду, которую с удовольствием расскажут гиды. Вокруг водопадов проложены оборудованные смотровые площадки с безопасными перилами, позволяющие насладиться видом с разных ракурсов.</p>
+                <button class="read-more-btn" onclick="openTextModal('Каскад водопадов на реке Иййоки', 'Величественный каскад из семи водопадов, каждый из которых имеет свою уникальную форму и характер. Высота самого большого водопада достигает 15 метров. Водопады создают удивительную атмосферу с мелодичным звуком падающей воды и свежестью в любое время года. Здесь можно сделать потрясающие фотографии и насладиться силой природы. Каждый водопад имеет свое имя и легенду, которую с удовольствием расскажут гиды. Вокруг водопадов проложены оборудованные смотровые площадки с безопасными перилами, позволяющие насладиться видом с разных ракурсов. Весной, во время снеготаяния, водопады особенно полноводны и впечатляющи. Летом здесь прохладно и свежо даже в самую жаркую погоду. Осень окрашивает окружающий лес в золотые и багряные тона, создавая неповторимую живописную картину. Зимой водопады частично замерзают, образуя волшебные ледяные скульптуры.')">Подробнее</button>
+            </div>
+            <div class="gallery-content border">
+                <div class="image-gallery" data-gallery="2">
+                    <div class="gallery-image active" style="background-image: url(images/main-vodopad-1.jpg);"></div>
+                    <div class="gallery-image" style="background-image: url(images/main-vodopad-2.jpg);"></div>
+                    <div class="gallery-image" style="background-image: url(images/main-vodopad-3.webp);"></div>
+                </div>
+                <div class="gallery-controls">
+                    <button class="arrow-btn prev-btn" onclick="changeImage(2, -1)">‹</button>
+                    <button class="arrow-btn next-btn" onclick="changeImage(2, 1)">›</button>
+                </div>
+            </div>
+        </div>
 
         <!-- Блок 3: Текст слева, фото справа -->
-                 <div class="attraction-block">
-                     <div class="text-content">
-                         <h2>Удивительный мир водяной мельницы</h2>
-                         <p>Историческая водяная мельница XVII века, полностью восстановленная и функционирующая. Здесь вы узнаете о традиционных технологиях помола зерна и сможете увидеть работу механизмов. Мельница окружена живописным прудом с водяными лилиями и утками, создающим идиллическую атмосферу старинной деревни. Внутри мельницы сохранены оригинальные механизмы, которые демонстрируют сложную инженерную мысль прошлых веков. Мастера-помольщики проводят экскурсии и показывают процесс превращения зерна в муку.</p>
-                         <button class="read-more-btn" onclick="openTextModal('Удивительный мир водяной мельницы', 'Историческая водяная мельница XVII века, полностью восстановленная и функционирующая. Здесь вы узнаете о традиционных технологиях помола зерна и сможете увидеть работу механизмов. Мельница окружена живописным прудом с водяными лилиями и утками, создающим идиллическую атмосферу старинной деревни. Внутри мельницы сохранены оригинальные механизмы, которые демонстрируют сложную инженерную мысль прошлых веков. Мастера-помольщики проводят экскурсии и показывают процесс превращения зерна в муку. Вы сможете самостоятельно попробовать себя в роли мельника и приобрести свежесмолотую муку на память. Вокруг мельницы разбит живописный сад с травами и цветами, которые использовались в народной медицине.')">Подробнее</button>
-                     </div>
-                     <div class="gallery-content">
-                         <div class="image-gallery" data-gallery="3">
-                             <div class="gallery-image active" style="background-image: url(images/attraction-block/block-3/0010.jpg);"></div>
-                             <div class="gallery-image" style="background-image: url(images/attraction-block/block-3/0179.jpg);"></div>
-                             <div class="gallery-image" style="background-image: url(images/attraction-block/block-3/0180.jpg);"></div>
-                         </div>
-                         <div class="gallery-controls">
-                             <button class="arrow-btn prev-btn" onclick="changeImage(3, -1)">‹</button>
-                             <button class="arrow-btn next-btn" onclick="changeImage(3, 1)">›</button>
-                         </div>
-                     </div>
-                 </div>
+        <div class="attraction-block">
+            <div class="text-content">
+                <h2>Удивительный мир водяной мельницы</h2>
+                <p>Историческая водяная мельница XVII века, полностью восстановленная и функционирующая. Здесь вы узнаете о традиционных технологиях помола зерна и сможете увидеть работу механизмов. Мельница окружена живописным прудом с водяными лилиями и утками, создающим идиллическую атмосферу старинной деревни. Внутри мельницы сохранены оригинальные механизмы, которые демонстрируют сложную инженерную мысль прошлых веков. Мастера-помольщики проводят экскурсии и показывают процесс превращения зерна в муку.</p>
+                <button class="read-more-btn" onclick="openTextModal('Удивительный мир водяной мельницы', 'Историческая водяная мельница XVII века, полностью восстановленная и функционирующая. Здесь вы узнаете о традиционных технологиях помола зерна и сможете увидеть работу механизмов. Мельница окружена живописным прудом с водяными лилиями и утками, создающим идиллическую атмосферу старинной деревни. Внутри мельницы сохранены оригинальные механизмы, которые демонстрируют сложную инженерную мысль прошлых веков. Мастера-помольщики проводят экскурсии и показывают процесс превращения зерна в муку. Вы сможете самостоятельно попробовать себя в роли мельника и приобрести свежесмолотую муку на память. Вокруг мельницы разбит живописный сад с травами и цветами, которые использовались в народной медицине.')">Подробнее</button>
+            </div>
+            <div class="gallery-content">
+                <div class="image-gallery" data-gallery="3">
+                    <div class="gallery-image active" style="background-image: url(images/mel-1.webp);"></div>
+                    <div class="gallery-image" style="background-image: url(images/mel-2.webp);"></div>
+                    <div class="gallery-image" style="background-image: url(images/mel-3.webp);"></div>
+                </div>
+                <div class="gallery-controls">
+                    <button class="arrow-btn prev-btn" onclick="changeImage(3, -1)">‹</button>
+                    <button class="arrow-btn next-btn" onclick="changeImage(3, 1)">›</button>
+                </div>
+            </div>
+        </div>
 
         <!-- Блок 4: Фото слева, текст справа -->
-                 <div class="attraction-block reverse">
-                     <div class="text-content">
-                         <h2>Культура северных народов в «Саамской деревне»</h2>
-                         <p>Аутентичная реконструкция традиционного саамского поселения с настоящими чумами, оленями и предметами быта. Здесь проводятся мастер-классы по саамским ремеслам, рассказывается о традициях и обрядах этого древнего народа. Вы сможете примерить национальные костюмы и попробовать традиционные блюда. В программе представлены обрядовые песни и танцы, демонстрация традиционных ремесел и знакомство с шаманскими практиками.</p>
-                         <button class="read-more-btn" onclick="openTextModal('Знакомство с удивительной культурой северных народов в «Саамской деревне»', 'Аутентичная реконструкция традиционного саамского поселения с настоящими чумами, оленями и предметами быта. Здесь проводятся мастер-классы по саамским ремеслам, рассказывается о традициях и обрядах этого древнего народа. Вы сможете примерить национальные костюмы и попробовать традиционные блюда. В программе представлены обрядовые песни и танцы, демонстрация традиционных ремесел и знакомство с шаманскими практиками. Местные жители в костюмах саамов проводят интерактивные представления, показывают быт и рассказывают легенды своего народа. В деревне можно приобрести подлинные изделия ручной работы, созданные по старинным технологиям.')">Подробнее</button>
-                     </div>
-                     <div class="gallery-content border">
-                         <div class="image-gallery" data-gallery="4">
-                                              <div class="gallery-image active" style="background-image: url(images/attraction-block/block-4/1.jpg);"></div>
-                                              <div class="gallery-image" style="background-image: url(images/attraction-block/block-4/2.jpg);"></div>
-                                              <div class="gallery-image" style="background-image: url(images/attraction-block/block-4/3.JPG);"></div>
-                                              <div class="gallery-image" style="background-image: url('images/attraction-block/block-4/4.jpg');"></div>
-                                                                   <div class="gallery-image" style="background-image: url('images/attraction-block/block-4/5.jpg');"></div>
-                                                                   <div class="gallery-image" style="background-image: url('images/attraction-block/block-4/6.jpg');"></div>
-                                                                   <div class="gallery-image" style="background-image: url('images/attraction-block/block-4/7.jpg');"></div>
-                                                                   <div class="gallery-image" style="background-image: url('images/attraction-block/block-4/8.jpg');"></div>
-                                                                   <div class="gallery-image" style="background-image: url('images/attraction-block/block-4/9.jpg');"></div>
-                                                                   <div class="gallery-image" style="background-image: url('images/attraction-block/block-4/10.jpg');"></div>
-                                          </div>
-                         <div class="gallery-controls">
-                             <button class="arrow-btn prev-btn" onclick="changeImage(4, -1)">‹</button>
-                             <button class="arrow-btn next-btn" onclick="changeImage(4, 1)">›</button>
-                         </div>
-                     </div>
-                 </div>
+        <div class="attraction-block reverse">
+            <div class="text-content">
+                <h2>Культура северных народов в «Саамской деревне»</h2>
+                <p>Аутентичная реконструкция традиционного саамского поселения с настоящими чумами, оленями и предметами быта. Здесь проводятся мастер-классы по саамским ремеслам, рассказывается о традициях и обрядах этого древнего народа. Вы сможете примерить национальные костюмы и попробовать традиционные блюда. В программе представлены обрядовые песни и танцы, демонстрация традиционных ремесел и знакомство с шаманскими практиками.</p>
+                <button class="read-more-btn" onclick="openTextModal('Знакомство с удивительной культурой северных народов в «Саамской деревне»', 'Аутентичная реконструкция традиционного саамского поселения с настоящими чумами, оленями и предметами быта. Здесь проводятся мастер-классы по саамским ремеслам, рассказывается о традициях и обрядах этого древнего народа. Вы сможете примерить национальные костюмы и попробовать традиционные блюда. В программе представлены обрядовые песни и танцы, демонстрация традиционных ремесел и знакомство с шаманскими практиками. Местные жители в костюмах саамов проводят интерактивные представления, показывают быт и рассказывают легенды своего народа. В деревне можно приобрести подлинные изделия ручной работы, созданные по старинным технологиям.')">Подробнее</button>
+            </div>
+            <div class="gallery-content border">
+                <div class="image-gallery" data-gallery="4">
+                    <div class="gallery-image active" style="background-image: url(images/saam-1.webp);"></div>
+                    <div class="gallery-image" style="background-image: url(images/saam-2.webp);"></div>
+                    <div class="gallery-image" style="background-image: url(images/saam-3.webp);"></div>
+                </div>
+                <div class="gallery-controls">
+                    <button class="arrow-btn prev-btn" onclick="changeImage(4, -1)">‹</button>
+                    <button class="arrow-btn next-btn" onclick="changeImage(4, 1)">›</button>
+                </div>
+            </div>
+        </div>
 
         <!-- Блок 6: Фото слева, текст справа -->
-                 <div class="attraction-block">
-                     <div class="text-content">
-                         <h2>Оленья ферма «Семь хуторов»</h2>
-                         <p>Уникальная возможность познакомиться с северными оленями в их естественной среде обитания. На ферме проживает более 50 оленей разных возрастов. Гости могут участвовать в кормлении животных, узнать об их повадках и значении в культуре Карелии. Дети особенно любят это место за возможность пообщаться с дружелюбными животными. Ферма разделена на семь хуторов, каждый из которых имеет свою историю и особенности.</p>
-                         <button class="read-more-btn" onclick="openTextModal('Оленья ферма «Семь хуторов»', 'Уникальная возможность познакомиться с северными оленями в их естественной среде обитания. На ферме проживает более 50 оленей разных возрастов. Гости могут участвовать в кормлении животных, узнать об их повадках и значении в культуре Карелии. Дети особенно любят это место за возможность пообщаться с дружелюбными животными. Ферма разделена на семь хуторов, каждый из которых имеет свою историю и особенности. В хуторах представлены разные породы северных оленей, каждая со своими характеристиками. Гиды расскажут о традиционном оленеводстве, покажут как правильно ухаживать за животными и познакомят с местными традициями. Можно попробовать себя в роли настоящего оленевода и даже покататься на оленьей упряжке.')">Подробнее</button>
-                     </div>
-                     <div class="gallery-content">
-                         <div class="image-gallery" data-gallery="6">
-                             <div class="gallery-image active" style="background-image: url(images/attraction-block/block-5/0043.jpg);"></div>
-                             <div class="gallery-image" style="background-image: url(images/attraction-block/block-5/0048.jpg);"></div>
-                             <div class="gallery-image" style="background-image: url(images/attraction-block/block-5/052.jpg);"></div>
-                            </div>
-                         <div class="gallery-controls">
-                             <button class="arrow-btn prev-btn" onclick="changeImage(6, -1)">‹</button>
-                             <button class="arrow-btn next-btn" onclick="changeImage(6, 1)">›</button>
-                         </div>
-                     </div>
-                 </div>
+        <div class="attraction-block">
+            <div class="text-content">
+                <h2>Оленья ферма «Семь хуторов»</h2>
+                <p>Уникальная возможность познакомиться с северными оленями в их естественной среде обитания. На ферме проживает более 50 оленей разных возрастов. Гости могут участвовать в кормлении животных, узнать об их повадках и значении в культуре Карелии. Дети особенно любят это место за возможность пообщаться с дружелюбными животными. Ферма разделена на семь хуторов, каждый из которых имеет свою историю и особенности.</p>
+                <button class="read-more-btn" onclick="openTextModal('Оленья ферма «Семь хуторов»', 'Уникальная возможность познакомиться с северными оленями в их естественной среде обитания. На ферме проживает более 50 оленей разных возрастов. Гости могут участвовать в кормлении животных, узнать об их повадках и значении в культуре Карелии. Дети особенно любят это место за возможность пообщаться с дружелюбными животными. Ферма разделена на семь хуторов, каждый из которых имеет свою историю и особенности. В хуторах представлены разные породы северных оленей, каждая со своими характеристиками. Гиды расскажут о традиционном оленеводстве, покажут как правильно ухаживать за животными и познакомят с местными традициями. Можно попробовать себя в роли настоящего оленевода и даже покататься на оленьей упряжке.')">Подробнее</button>
+            </div>
+            <div class="gallery-content">
+                <div class="image-gallery" data-gallery="6">
+                    <div class="gallery-image active" style="background-image: url(images/olen-1.webp);"></div>
+                    <div class="gallery-image" style="background-image: url(images/olen-2.webp);"></div>
+                    <div class="gallery-image" style="background-image: url(images/olen-3.webp);"></div>
+                </div>
+                <div class="gallery-controls">
+                    <button class="arrow-btn prev-btn" onclick="changeImage(6, -1)">‹</button>
+                    <button class="arrow-btn next-btn" onclick="changeImage(6, 1)">›</button>
+                </div>
+            </div>
+        </div>
 
         <!-- Блок 7: Текст слева, фото справа -->
-                 <div class="attraction-block reverse">
-                     <div class="text-content">
-                         <h2>Кафе с традиционной кухней</h2>
-                         <p>Уютное кафе предлагает аутентичные блюда карельской кухни, приготовленные по старинным рецептам. В меню представлены щи с картофелем, рубцы, кулебяки и знаменитый карельский калья. Интерьер оформлен в традиционном стиле с использованием натуральных материалов. Особое внимание уделяется экологичности продуктов и сохранению кулинарных традиций региона. Все блюда готовятся из местных продуктов, выращенных в экологически чистых условиях.</p>
-                         <button class="read-more-btn" onclick="openTextModal('Кафе с традиционной кухней', 'Уютное кафе предлагает аутентичные блюда карельской кухни, приготовленные по старинным рецептам. В меню представлены щи с картофелем, рубцы, кулебяки и знаменитый карельский калья. Интерьер оформлен в традиционном стиле с использованием натуральных материалов. Особое внимание уделяется экологичности продуктов и сохранению кулинарных традиций региона. Все блюда готовятся из местных продуктов, выращенных в экологически чистых условиях. Помимо основного меню, предлагаются сезонные специалитеты, отражающие особенности каждого времени года. Здесь можно попробовать блюда, приготовленные по рецептам, переданным из поколения в поколение карельскими семьями.')">Подробнее</button>
-                     </div>
-                     <div class="gallery-content border">
-                        <div class="image-gallery" data-gallery="7"><div class="gallery-image active" style="background-image: url(images/attraction-block/block-6/1.JPG);"></div>    
-                            <div class="gallery-image" style="background-image: url(images/attraction-block/block-6/cafe-2.webp);"></div>
-                            <div class="gallery-image" style="background-image: url(images/attraction-block/block-6/cafe-3.webp);"></div>
-                        </div>
-                         <div class="gallery-controls">
-                             <button class="arrow-btn prev-btn" onclick="changeImage(7, -1)">‹</button>
-                             <button class="arrow-btn next-btn" onclick="changeImage(7, 1)">›</button>
-                         </div>
-                     </div>
-                 </div>
+        <div class="attraction-block reverse">
+            <div class="text-content">
+                <h2>Кафе с традиционной кухней</h2>
+                <p>Уютное кафе предлагает аутентичные блюда карельской кухни, приготовленные по старинным рецептам. В меню представлены щи с картофелем, рубцы, кулебяки и знаменитый карельский калья. Интерьер оформлен в традиционном стиле с использованием натуральных материалов. Особое внимание уделяется экологичности продуктов и сохранению кулинарных традиций региона. Все блюда готовятся из местных продуктов, выращенных в экологически чистых условиях.</p>
+                <button class="read-more-btn" onclick="openTextModal('Кафе с традиционной кухней', 'Уютное кафе предлагает аутентичные блюда карельской кухни, приготовленные по старинным рецептам. В меню представлены щи с картофелем, рубцы, кулебяки и знаменитый карельский калья. Интерьер оформлен в традиционном стиле с использованием натуральных материалов. Особое внимание уделяется экологичности продуктов и сохранению кулинарных традиций региона. Все блюда готовятся из местных продуктов, выращенных в экологически чистых условиях. Помимо основного меню, предлагаются сезонные специалитеты, отражающие особенности каждого времени года. Здесь можно попробовать блюда, приготовленные по рецептам, переданным из поколения в поколение карельскими семьями.')">Подробнее</button>
+            </div>
+            <div class="gallery-content border">
+                <div class="image-gallery" data-gallery="7">
+                    <div class="gallery-image active" style="background-image: url(images/cafe-1.webp);"></div>
+                    <div class="gallery-image" style="background-image: url(images/cafe-2.webp);"></div>
+                    <div class="gallery-image" style="background-image: url(images/cafe-3.webp);"></div>
+                </div>
+                <div class="gallery-controls">
+                    <button class="arrow-btn prev-btn" onclick="changeImage(7, -1)">‹</button>
+                    <button class="arrow-btn next-btn" onclick="changeImage(7, 1)">›</button>
+                </div>
+            </div>
+        </div>
 
         <!-- Блок 8: Фото слева, текст справа -->
-                 <div class="attraction-block">
-                     <div class="text-content">
-                         <h2>Магазин сувениров и фермерских продуктов</h2>
-                         <p>Специализированный магазин предлагает широкий выбор сувениров ручной работы, созданных местными мастерами. Здесь можно приобрести изделия из бересты, резные деревянные фигурки, традиционные тканые изделия и ювелирные украшения с карельскими мотивами. Также представлены фермерские продукты: мед, ягодные варенья, травяные чаи и мясные деликатесы. Все товары сертифицированы и имеют документы происхождения.</p>
-                         <button class="read-more-btn" onclick="openTextModal('Магазин сувениров и фермерских продуктов', 'Специализированный магазин предлагает широкий выбор сувениров ручной работы, созданных местными мастерами. Здесь можно приобрести изделия из бересты, резные деревянные фигурки, традиционные тканые изделия и ювелирные украшения с карельскими мотивами. Также представлены фермерские продукты: мед, ягодные варенья, травяные чаи и мясные деликатесы. Все товары сертифицированы и имеют документы происхождения. Магазин сотрудничает напрямую с ремесленниками и фермерами региона, обеспечивая справедливую оплату труда и качественные материалы. Здесь же можно найти литературу о Карелии, открытки с видами парка и специальные наборы для творчества.')">Подробнее</button>
-                     </div>
-                     <div class="gallery-content">
-                         <div class="image-gallery" data-gallery="8">
-
-                             <div class="gallery-image active" style="background-image: url(images/attraction-block/block-7/0039.jpg);"></div>
-                             <div class="gallery-image" style="background-image: url(images/attraction-block/block-7/0034.jpg);"></div>
-                             <div class="gallery-image" style="background-image: url(images/attraction-block/block-7/0035.jpg);"></div>
-                         </div>
-                         <div class="gallery-controls">
-                             <button class="arrow-btn prev-btn" onclick="changeImage(8, -1)">‹</button>
-                             <button class="arrow-btn next-btn" onclick="changeImage(8, 1)">›</button>
-                         </div>
-                     </div>
-                 </div>
+        <div class="attraction-block">
+            <div class="text-content">
+                <h2>Магазин сувениров и фермерских продуктов</h2>
+                <p>Специализированный магазин предлагает широкий выбор сувениров ручной работы, созданных местными мастерами. Здесь можно приобрести изделия из бересты, резные деревянные фигурки, традиционные тканые изделия и ювелирные украшения с карельскими мотивами. Также представлены фермерские продукты: мед, ягодные варенья, травяные чаи и мясные деликатесы. Все товары сертифицированы и имеют документы происхождения.</p>
+                <button class="read-more-btn" onclick="openTextModal('Магазин сувениров и фермерских продуктов', 'Специализированный магазин предлагает широкий выбор сувениров ручной работы, созданных местными мастерами. Здесь можно приобрести изделия из бересты, резные деревянные фигурки, традиционные тканые изделия и ювелирные украшения с карельскими мотивами. Также представлены фермерские продукты: мед, ягодные варенья, травяные чаи и мясные деликатесы. Все товары сертифицированы и имеют документы происхождения. Магазин сотрудничает напрямую с ремесленниками и фермерами региона, обеспечивая справедливую оплату труда и качественные материалы. Здесь же можно найти литературу о Карелии, открытки с видами парка и специальные наборы для творчества.')">Подробнее</button>
+            </div>
+            <div class="gallery-content">
+                <div class="image-gallery" data-gallery="8">
+                    <div class="gallery-image active" style="background-image: url(images/mag-1.webp);"></div>
+                    <div class="gallery-image" style="background-image: url(images/mag-2.webp);"></div>
+                    <div class="gallery-image" style="background-image: url(images/mag-3.webp);"></div>
+                </div>
+                <div class="gallery-controls">
+                    <button class="arrow-btn prev-btn" onclick="changeImage(8, -1)">‹</button>
+                    <button class="arrow-btn next-btn" onclick="changeImage(8, 1)">›</button>
+                </div>
+            </div>
+        </div>
 
         <!-- Блок галереи -->
         <section id="gallery" class="gallery-section">
@@ -345,19 +331,19 @@
                     
                     <div class="reviews-gallery-container">
                         <div class="image-gallery" data-gallery="reviews">
-                                                     <div class="gallery-image active">
-                                                         <div class="review-image" style="background-image: url('images/reviews-container/_MG_4311.JPG');"></div>
-                                                         <div class="emoji-overlay">😊</div>
-                                                     </div>
-                                                     <div class="gallery-image">
-                                                         <div class="review-image" style="background-image: url('images/reviews-container/_MG_5720.JPG');"></div>
-                                                         <div class="emoji-overlay">🌟</div>
-                                                     </div>
-                                                     <div class="gallery-image">
-                                                         <div class="review-image" style="background-image: url('images/reviews-container/_MG_6547.JPG');"></div>
-                                                         <div class="emoji-overlay">👍</div>
-                                                     </div>
-                                                 </div>
+                            <div class="gallery-image active">
+                                <div class="review-image" style="background-image: url('images/pep-1.webp');"></div>
+                                <div class="emoji-overlay">😊</div>
+                            </div>
+                            <div class="gallery-image">
+                                <div class="review-image" style="background-image: url('images/pep-2.webp');"></div>
+                                <div class="emoji-overlay">🌟</div>
+                            </div>
+                            <div class="gallery-image">
+                                <div class="review-image" style="background-image: url('images/pep-3.webp');"></div>
+                                <div class="emoji-overlay">👍</div>
+                            </div>
+                        </div>
                         
                         <div class="gallery-controls">
                             <button class="arrow-btn prev-btn" onclick="changeImage('reviews', -1)">‹</button>
@@ -419,7 +405,7 @@
                 <!-- Правая часть - карта -->
                 <div class="directions-map">
                     <div class="map-container">
-                        <div id="yandex-map" style="border-radius: 12px; overflow: hidden;"></div>
+                        <div id="yandex-map" style="width: 100%; height: 100%; border-radius: 12px; overflow: hidden;"></div>
                     </div>
                 </div>
             </div>
@@ -558,7 +544,7 @@
             <!-- Первая колонка - Логотип -->
             <div class="footer-column logo-column">
                 <div class="footer-logo">
-                    <img src="images/logo/logo_dolina.png" 
+                    <img src="logo_dolina.png" 
                          alt="Логотип Долина Водопадов"
                          width="60" 
                          height="60">
