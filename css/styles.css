@@ -721,11 +721,6 @@ body {
     background: #f0f0f0;
     height: 100vh;
     overflow: hidden;
-    border-radius: 0px 50px 50px 0px;
-}
-
-.border {
-    border-radius: 50px 0px 0px 50px !important;
 }
 
 .image-gallery {
