@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход в админ-панель - Долина Водопадов</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/adm.css') }}">
+</head>
+<body>
+    <div class="login-container">
+        <div class="logo">
+            <div class="logo-text">Долина Водопадов</div>
+            <p>Административная панель</p>
+        </div>
+        
+        <div class="login-header">
+            <h1>Вход в систему</h1>
+            <p>Для доступа к админ-панели требуется авторизация</p>
+        </div>
+        
+        {% if error %}
+        <div class="error-message">
+            {{ error }}
+        </div>
+        {% endif %}
+        
+        <div class="login-info">
+            <strong>Тестовые учетные данные:</strong><br>
+            Логин: <code>admin</code><br>
+            Пароль: <code>admin</code>
+        </div>
+        
+        <form class="login-form" method="POST" action="{{ url_for('login') }}">
+            <div class="form-group">
+                <label for="username">Имя пользователя</label>
+                <input type="text" id="username" name="username" required 
+                       placeholder="Введите логин" autocomplete="username">
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Пароль</label>
+                <input type="password" id="password" name="password" required 
+                       placeholder="Введите пароль" autocomplete="current-password">
+            </div>
+            
+            <button type="submit" class="login-button">Войти</button>
+        </form>
+        
+        <div class="login-footer">
+            <a href="{{ url_for('index') }}">← Вернуться на главную страницу</a>
+        </div>
+    </div>
+</body>
+</html>

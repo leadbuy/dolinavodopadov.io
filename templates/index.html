@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Парк природы «Долина Водопадов»</title>
+    <title>{{ page_data.hero.title if page_data.hero else 'Путешествие в Карелию: Парк природы «Долина Водопадов»' }}</title>
+    <meta name="description" content="{{ page_data.hero.description if page_data.hero else 'Путешествие в Карелию: Парк природы «Долина Водопадов»' }}">
     
     <!-- Предзагрузка критичных ресурсов -->
     <link rel="preload" href="{{ url_for('static', filename='css/styles.css') }}" as="style">
@@ -20,23 +21,34 @@
     <!-- Главный экран -->
     <section class="hero-section" aria-label="Главный экран парка">
         <!-- Слайдер фонов с lazy loading -->
-                 <div class="background-slider">
-                     <div class="slide active"
-                          data-bg="{{ url_for('static', filename='images/') }}hero-section/1.jpeg"
-                          role="img"
-                          aria-label="Пейзаж парка 1">
-                     </div>
-                     <div class="slide"
-                          data-bg="{{ url_for('static', filename='images/hero-section/2.jpeg') }}"
-                          role="img"
-                          aria-label="Пейзаж парка 2">
-                     </div>
-                     <div class="slide"
-                          data-bg="{{ url_for('static', filename='images/hero-section/3.jpeg') }}"
-                          role="img"
-                          aria-label="Пейзаж парка 3">
-                     </div>
-                 </div>
+        <div class="background-slider">
+            {% if hero_images %}
+                {% for image in hero_images %}
+                    <div class="slide {{ 'active' if loop.first else '' }}"
+                        data-bg="{{ url_for('static', filename=image) }}"
+                        role="img"
+                        aria-label="Пейзаж парка {{ loop.index }}">
+                    </div>
+                {% endfor %}
+            {% else %}
+                <!-- Fallback если нет изображений -->
+                <div class="slide active"
+                    data-bg="{{ url_for('static', filename='images/logo/logo_dolina.png') }}"
+                    role="img"
+                    aria-label="Логотип парка">
+                </div>
+                <div class="slide"
+                    data-bg="{{ url_for('static', filename='images/logo/logo_dolina.png') }}"
+                    role="img"
+                    aria-label="Логотип парка">
+                </div>
+                <div class="slide"
+                    data-bg="{{ url_for('static', filename='images/logo/logo_dolina.png') }}"
+                    role="img"
+                    aria-label="Логотип парка">
+                </div>
+            {% endif %}
+        </div>
 
         <!-- Шапка -->
         <header class="header" role="banner">
@@ -96,7 +108,7 @@
 
         <div class="hero-content">
             <h1 class="hero-title">
-                Путешествие в Карелию: <br>Парк природы «Долина Водопадов»
+                {{ page_data.hero.title if page_data.hero else 'Путешествие в Карелию: <br>Парк природы «Долина Водопадов»' }}
             </h1>
             
             <!-- Кнопки в нижней части -->
@@ -124,22 +136,22 @@
             </div>
             <div class="about-content">
                 <div class="about-text">
-                    <p>Эко-этнопарк «Долина Водопадов» — это уникальное место в сердце Карелии, где сохраняется первозданная природа и культурное наследие северных народов.</p>
-                    <p>На территории парка площадью более 50 гектаров расположены каскады водопадов, древние леса, оленья ферма и реконструкции традиционных поселений.</p>
-                    <p>Мы создаем пространство для гармоничного отдыха, где каждый может прикоснуться к природе и истории этого удивительного края.</p>
+                    <p>{{ page_data.about.paragraph1 if page_data.about else 'Эко-этнопарк «Долина Водопадов» — это уникальное место в сердце Карелии, где сохраняется первозданная природа и культурное наследие северных народов.' }}</p>
+                    <p>{{ page_data.about.paragraph2 if page_data.about else 'На территории парка площадью более 50 гектаров расположены каскады водопадов, древние леса, оленья ферма и реконструкции традиционных поселений.' }}</p>
+                    <p>{{ page_data.about.paragraph3 if page_data.about else 'Мы создаем пространство для гармоничного отдыха, где каждый может прикоснуться к природе и истории этого удивительного края.' }}</p>
                 </div>
                 <!-- Перемещаем блок статистики ПОСЛЕ текста -->
                 <div class="about-stats">
                     <div class="stat-item">
-                        <span class="stat-number">7</span>
+                        <span class="stat-number">{{ page_data.stats.waterfalls if page_data.stats else '7' }}</span>
                         <span class="stat-label">водопадов</span>
                     </div>
                     <div class="stat-item">
-                        <span class="stat-number">50+</span>
+                        <span class="stat-number">{{ page_data.stats.territory if page_data.stats else '50+' }}</span>
                         <span class="stat-label">гектаров территории</span>
                     </div>
                     <div class="stat-item">
-                        <span class="stat-number">5</span>
+                        <span class="stat-number">{{ page_data.stats.zones if page_data.stats else '5' }}</span>
                         <span class="stat-label">тематических зон</span>
                     </div>
                 </div>
@@ -149,7 +161,8 @@
 
     <!-- Достопримечательности -->
          <section id="places" class="attractions-section">
-             <!-- Блок 1: Текст слева, фото справа -->
+             
+            <!-- Блок 1: Текст слева, фото справа -->
              <div class="attraction-block">
                  <div class="text-content">
                      <h2>ЧТО ТАКОЕ ЭКОТРОПА?</h2>
@@ -171,136 +184,158 @@
                  </div>
              </div>
 
-        <!-- Блок 2: Фото слева, текст справа -->
-                 <div class="attraction-block reverse">
-                     <div class="text-content">
-                         <h2>Каскад водопадов на реке Иййоки</h2>
-                         <p>Река Иийоки славится своим потрясающим очарованием и природными чудесами, среди которых выделяется известный Каскад водопадов. Это одна из самых посещаемых туристических достопримечательностей в Карелии.</p>
-                         <p>Река берёт начало из озера ИСО -Ийярви и устремляется к Ладожскому озеру, преодолевая расстояние в 38 километров. На своём пути она принимает воды 76 притоков, среди которых выделяется Калайоки — её главный приток длиной 24 километра, начинающийся в озере Париканъярви.</p>
-                         <button class="read-more-btn" onclick="openTextModal('Каскад водопадов на реке Иййоки', 'Река берёт начало из озера ИСО -Ийярви и устремляется к Ладожскому озеру, преодолевая расстояние в 38 километров. На своём пути она принимает воды 76 притоков, среди которых выделяется Калайоки — её главный приток длиной 24 километра, начинающийся в озере Париканъярви. ')">Подробнее</button>
-                     </div>
-                     <div class="gallery-content">
-                         <div class="image-gallery" data-gallery="2">
-                                              <div class="gallery-image active" style="background-image: url({{ url_for('static', filename='images/') }}attraction-block/block-2/1.jpeg);"></div>
-                                              <div class="gallery-image" style="background-image: url({{ url_for('static', filename='images/attraction-block/block-2/2.jpeg') }});"></div>
-                                              <div class="gallery-image" style="background-image: url({{ url_for('static', filename='images/') }}attraction-block/block-2/3.jpeg);"></div>
-                                              <div class="gallery-image" style="background-image: url({{ url_for('static', filename='images/') }}attraction-block/block-2/4.jpeg);"></div>
-                                              <div class="gallery-image" style="background-image: url({{ url_for('static', filename='images/') }}attraction-block/block-2/5.jpeg);"></div>
-                                          </div>
-                         <div class="gallery-controls">
-                             <button class="arrow-btn prev-btn" onclick="changeImage(2, -1)">‹</button>
-                             <button class="arrow-btn next-btn" onclick="changeImage(2, 1)">›</button>
-                         </div>
-                     </div>
-                 </div>
+            <!-- Блок 2: Фото слева, текст справа -->
+            <div class="attraction-block reverse">
+                <div class="text-content">
+                    <h2>Каскад водопадов на реке Иййоки</h2>
+                    <p>Река Иийоки славится своим потрясающим очарованием и природными чудесами, среди которых выделяется известный Каскад водопадов. Это одна из самых посещаемых туристических достопримечательностей в Карелии.</p>
+                    <p>Река берёт начало из озера ИСО -Ийярви и устремляется к Ладожскому озеру, преодолевая расстояние в 38 километров. На своём пути она принимает воды 76 притоков, среди которых выделяется Калайоки — её главный приток длиной 24 километра, начинающийся в озере Париканъярви.</p>
+                    <button class="read-more-btn" onclick="openTextModal('Каскад водопадов на реке Иййоки', 'Река берёт начало из озера ИСО -Ийярви и устремляется к Ладожскому озеру, преодолевая расстояние в 38 километров. На своём пути она принимает воды 76 притоков, среди которых выделяется Калайоки — её главный приток длиной 24 километра, начинающийся в озере Париканъярви. ')">Подробнее</button>
+                </div>
+                <div class="gallery-content">
+                    <div class="image-gallery" data-gallery="2">
+                                        <div class="gallery-image active" style="background-image: url({{ url_for('static', filename='images/') }}attraction-block/block-2/1.jpeg);"></div>
+                                        <div class="gallery-image" style="background-image: url({{ url_for('static', filename='images/attraction-block/block-2/2.jpeg') }});"></div>
+                                        <div class="gallery-image" style="background-image: url({{ url_for('static', filename='images/') }}attraction-block/block-2/3.jpeg);"></div>
+                                        <div class="gallery-image" style="background-image: url({{ url_for('static', filename='images/') }}attraction-block/block-2/4.jpeg);"></div>
+                                        <div class="gallery-image" style="background-image: url({{ url_for('static', filename='images/') }}attraction-block/block-2/5.jpeg);"></div>
+                                    </div>
+                    <div class="gallery-controls">
+                        <button class="arrow-btn prev-btn" onclick="changeImage(2, -1)">‹</button>
+                        <button class="arrow-btn next-btn" onclick="changeImage(2, 1)">›</button>
+                    </div>
+                </div>
+            </div>
 
-        <!-- Блок 3: Текст слева, фото справа -->
-                 <div class="attraction-block">
-                     <div class="text-content">
-                         <h2>Удивительный мир водяной мельницы</h2>
-                         <p>Историческая водяная мельница XVII века, полностью восстановленная и функционирующая. Здесь вы узнаете о традиционных технологиях помола зерна и сможете увидеть работу механизмов. Мельница окружена живописным прудом с водяными лилиями и утками, создающим идиллическую атмосферу старинной деревни. Внутри мельницы сохранены оригинальные механизмы, которые демонстрируют сложную инженерную мысль прошлых веков. Мастера-помольщики проводят экскурсии и показывают процесс превращения зерна в муку.</p>
-                         <button class="read-more-btn" onclick="openTextModal('Удивительный мир водяной мельницы', 'Историческая водяная мельница XVII века, полностью восстановленная и функционирующая. Здесь вы узнаете о традиционных технологиях помола зерна и сможете увидеть работу механизмов. Мельница окружена живописным прудом с водяными лилиями и утками, создающим идиллическую атмосферу старинной деревни. Внутри мельницы сохранены оригинальные механизмы, которые демонстрируют сложную инженерную мысль прошлых веков. Мастера-помольщики проводят экскурсии и показывают процесс превращения зерна в муку. Вы сможете самостоятельно попробовать себя в роли мельника и приобрести свежесмолотую муку на память. Вокруг мельницы разбит живописный сад с травами и цветами, которые использовались в народной медицине.')">Подробнее</button>
-                     </div>
-                     <div class="gallery-content">
-                         <div class="image-gallery" data-gallery="3">
-                             <div class="gallery-image active" style="background-image: url(images/attraction-block/block-3/1.jpeg);"></div>
-                             <div class="gallery-image" style="background-image: url({{ url_for('static', filename='images/') }}attraction-block/block-3/2.jpeg);"></div>
-                             <div class="gallery-image" style="background-image: url({{ url_for('static', filename='images/') }}attraction-block/block-3/3.jpeg);"></div>
-                             <div class="gallery-image" style="background-image: url({{ url_for('static', filename='images/') }}attraction-block/block-3/4.jpeg);"></div>
-                             <div class="gallery-image" style="background-image: url({{ url_for('static', filename='images/') }}attraction-block/block-3/5.jpeg);"></div>
-                         </div>
-                         <div class="gallery-controls">
-                             <button class="arrow-btn prev-btn" onclick="changeImage(3, -1)">‹</button>
-                             <button class="arrow-btn next-btn" onclick="changeImage(3, 1)">›</button>
-                         </div>
-                     </div>
-                 </div>
+            <!-- Блок 3: Текст слева, фото справа -->
+            <div class="attraction-block">
+                <div class="text-content">
+                    <h2>Удивительный мир водяной мельницы</h2>
+                    <p>Историческая водяная мельница XVII века, полностью восстановленная и функционирующая. Здесь вы узнаете о традиционных технологиях помола зерна и сможете увидеть работу механизмов. Мельница окружена живописным прудом с водяными лилиями и утками, создающим идиллическую атмосферу старинной деревни. Внутри мельницы сохранены оригинальные механизмы, которые демонстрируют сложную инженерную мысль прошлых веков. Мастера-помольщики проводят экскурсии и показывают процесс превращения зерна в муку.</p>
+                    <button class="read-more-btn" onclick="openTextModal('Удивительный мир водяной мельницы', 'Историческая водяная мельница XVII века, полностью восстановленная и функционирующая. Здесь вы узнаете о традиционных технологиях помола зерна и сможете увидеть работу механизмов. Мельница окружена живописным прудом с водяными лилиями и утками, создающим идиллическую атмосферу старинной деревни. Внутри мельницы сохранены оригинальные механизмы, которые демонстрируют сложную инженерную мысль прошлых веков. Мастера-помольщики проводят экскурсии и показывают процесс превращения зерна в муку. Вы сможете самостоятельно попробовать себя в роли мельника и приобрести свежесмолотую муку на память. Вокруг мельницы разбит живописный сад с травами и цветами, которые использовались в народной медицине.')">Подробнее</button>
+                </div>
+                <div class="gallery-content">
+                    <div class="image-gallery" data-gallery="3">
+                        <div class="gallery-image active" style="background-image: url(images/attraction-block/block-3/1.jpeg);"></div>
+                        <div class="gallery-image" style="background-image: url({{ url_for('static', filename='images/') }}attraction-block/block-3/2.jpeg);"></div>
+                        <div class="gallery-image" style="background-image: url({{ url_for('static', filename='images/') }}attraction-block/block-3/3.jpeg);"></div>
+                        <div class="gallery-image" style="background-image: url({{ url_for('static', filename='images/') }}attraction-block/block-3/4.jpeg);"></div>
+                        <div class="gallery-image" style="background-image: url({{ url_for('static', filename='images/') }}attraction-block/block-3/5.jpeg);"></div>
+                    </div>
+                    <div class="gallery-controls">
+                        <button class="arrow-btn prev-btn" onclick="changeImage(3, -1)">‹</button>
+                        <button class="arrow-btn next-btn" onclick="changeImage(3, 1)">›</button>
+                    </div>
+                </div>
+            </div>
 
-        <!-- Блок 4: Фото слева, текст справа -->
-                 <div class="attraction-block reverse">
-                     <div class="text-content">
-                         <h2>Культура северных народов в «Саамской деревне»</h2>
-                         <p>Аутентичная реконструкция традиционного саамского поселения с настоящими чумами, оленями и предметами быта. Здесь проводятся мастер-классы по саамским ремеслам, рассказывается о традициях и обрядах этого древнего народа. Вы сможете примерить национальные костюмы и попробовать традиционные блюда. В программе представлены обрядовые песни и танцы, демонстрация традиционных ремесел и знакомство с шаманскими практиками.</p>
-                         <button class="read-more-btn" onclick="openTextModal('Знакомство с удивительной культурой северных народов в «Саамской деревне»', 'Аутентичная реконструкция традиционного саамского поселения с настоящими чумами, оленями и предметами быта. Здесь проводятся мастер-классы по саамским ремеслам, рассказывается о традициях и обрядах этого древнего народа. Вы сможете примерить национальные костюмы и попробовать традиционные блюда. В программе представлены обрядовые песни и танцы, демонстрация традиционных ремесел и знакомство с шаманскими практиками. Местные жители в костюмах саамов проводят интерактивные представления, показывают быт и рассказывают легенды своего народа. В деревне можно приобрести подлинные изделия ручной работы, созданные по старинным технологиям.')">Подробнее</button>
-                     </div>
-                     <div class="gallery-content">
-                         <div class="image-gallery" data-gallery="4">
-                            <div class="gallery-image active" style="background-image: url({{ url_for('static', filename='images/') }}attraction-block/block-4/1.jpeg);"></div>
-                            <div class="gallery-image" style="background-image: url({{ url_for('static', filename='images/') }}attraction-block/block-4/2.jpeg);"></div>
-                            <div class="gallery-image" style="background-image: url({{ url_for('static', filename='images/') }}attraction-block/block-4/3.jpeg);"></div>
-                            <div class="gallery-image" style="background-image: url('{{ url_for('static', filename='images/') }}attraction-block/block-4/4.jpeg');"></div>
-                            <div class="gallery-image" style="background-image: url('{{ url_for('static', filename='images/') }}attraction-block/block-4/5.jpeg');"></div>
-                        </div>
-                         <div class="gallery-controls">
-                             <button class="arrow-btn prev-btn" onclick="changeImage(4, -1)">‹</button>
-                             <button class="arrow-btn next-btn" onclick="changeImage(4, 1)">›</button>
-                         </div>
-                     </div>
-                 </div>
+            <!-- Блок 4: Фото слева, текст справа -->
+            <div class="attraction-block reverse">
+                <div class="text-content">
+                    <h2>Культура северных народов в «Саамской деревне»</h2>
+                    <p>Аутентичная реконструкция традиционного саамского поселения с настоящими чумами, оленями и предметами быта. Здесь проводятся мастер-классы по саамским ремеслам, рассказывается о традициях и обрядах этого древнего народа. Вы сможете примерить национальные костюмы и попробовать традиционные блюда. В программе представлены обрядовые песни и танцы, демонстрация традиционных ремесел и знакомство с шаманскими практиками.</p>
+                    <button class="read-more-btn" onclick="openTextModal('Знакомство с удивительной культурой северных народов в «Саамской деревне»', 'Аутентичная реконструкция традиционного саамского поселения с настоящими чумами, оленями и предметами быта. Здесь проводятся мастер-классы по саамским ремеслам, рассказывается о традициях и обрядах этого древнего народа. Вы сможете примерить национальные костюмы и попробовать традиционные блюда. В программе представлены обрядовые песни и танцы, демонстрация традиционных ремесел и знакомство с шаманскими практиками. Местные жители в костюмах саамов проводят интерактивные представления, показывают быт и рассказывают легенды своего народа. В деревне можно приобрести подлинные изделия ручной работы, созданные по старинным технологиям.')">Подробнее</button>
+                </div>
+                <div class="gallery-content">
+                    <div class="image-gallery" data-gallery="4">
+                    <div class="gallery-image active" style="background-image: url({{ url_for('static', filename='images/') }}attraction-block/block-4/1.jpeg);"></div>
+                    <div class="gallery-image" style="background-image: url({{ url_for('static', filename='images/') }}attraction-block/block-4/2.jpeg);"></div>
+                    <div class="gallery-image" style="background-image: url({{ url_for('static', filename='images/') }}attraction-block/block-4/3.jpeg);"></div>
+                    <div class="gallery-image" style="background-image: url('{{ url_for('static', filename='images/') }}attraction-block/block-4/4.jpeg');"></div>
+                    <div class="gallery-image" style="background-image: url('{{ url_for('static', filename='images/') }}attraction-block/block-4/5.jpeg');"></div>
+                </div>
+                    <div class="gallery-controls">
+                        <button class="arrow-btn prev-btn" onclick="changeImage(4, -1)">‹</button>
+                        <button class="arrow-btn next-btn" onclick="changeImage(4, 1)">›</button>
+                    </div>
+                </div>
+            </div>
 
-        <!-- Блок 6: Фото слева, текст справа -->
-                 <div class="attraction-block">
-                     <div class="text-content">
-                         <h2>Оленья ферма «Семь хуторов»</h2>
-                         <p>Уникальная возможность познакомиться с северными оленями в их естественной среде обитания. На ферме проживает более 50 оленей разных возрастов. Гости могут участвовать в кормлении животных, узнать об их повадках и значении в культуре Карелии. Дети особенно любят это место за возможность пообщаться с дружелюбными животными. Ферма разделена на семь хуторов, каждый из которых имеет свою историю и особенности.</p>
-                         <button class="read-more-btn" onclick="openTextModal('Оленья ферма «Семь хуторов»', 'Уникальная возможность познакомиться с северными оленями в их естественной среде обитания. На ферме проживает более 50 оленей разных возрастов. Гости могут участвовать в кормлении животных, узнать об их повадках и значении в культуре Карелии. Дети особенно любят это место за возможность пообщаться с дружелюбными животными. Ферма разделена на семь хуторов, каждый из которых имеет свою историю и особенности. В хуторах представлены разные породы северных оленей, каждая со своими характеристиками. Гиды расскажут о традиционном оленеводстве, покажут как правильно ухаживать за животными и познакомят с местными традициями. Можно попробовать себя в роли настоящего оленевода и даже покататься на оленьей упряжке.')">Подробнее</button>
-                     </div>
-                     <div class="gallery-content">
-                         <div class="image-gallery" data-gallery="6">
-                            <div class="gallery-image active" style="background-image: url({{ url_for('static', filename='images/') }}attraction-block/block-5/1.jpeg);"></div>
-                            <div class="gallery-image" style="background-image: url({{ url_for('static', filename='images/') }}attraction-block/block-5/2.jpeg);"></div>
-                            <div class="gallery-image" style="background-image: url({{ url_for('static', filename='images/') }}attraction-block/block-5/3.jpeg);"></div>
-                            <div class="gallery-image" style="background-image: url('{{ url_for('static', filename='images/') }}attraction-block/block-5/4.jpeg');"></div>
-                            <div class="gallery-image" style="background-image: url('{{ url_for('static', filename='images/') }}attraction-block/block-5/5.jpeg');"></div>
-                            
-                         </div>
-                         <div class="gallery-controls">
-                             <button class="arrow-btn prev-btn" onclick="changeImage(6, -1)">‹</button>
-                             <button class="arrow-btn next-btn" onclick="changeImage(6, 1)">›</button>
-                         </div>
-                     </div>
-                 </div>
+            <!-- Блок 5: Фото слева, текст справа -->
+            <div class="attraction-block">
+                <div class="text-content">
+                    <h2>Оленья ферма «Семь хуторов»</h2>
+                    <p>Уникальная возможность познакомиться с северными оленями в их естественной среде обитания. На ферме проживает более 50 оленей разных возрастов. Гости могут участвовать в кормлении животных, узнать об их повадках и значении в культуре Карелии. Дети особенно любят это место за возможность пообщаться с дружелюбными животными. Ферма разделена на семь хуторов, каждый из которых имеет свою историю и особенности.</p>
+                    <button class="read-more-btn" onclick="openTextModal('Оленья ферма «Семь хуторов»', 'Уникальная возможность познакомиться с северными оленями в их естественной среде обитания. На ферме проживает более 50 оленей разных возрастов. Гости могут участвовать в кормлении животных, узнать об их повадках и значении в культуре Карелии. Дети особенно любят это место за возможность пообщаться с дружелюбными животными. Ферма разделена на семь хуторов, каждый из которых имеет свою историю и особенности. В хуторах представлены разные породы северных оленей, каждая со своими характеристиками. Гиды расскажут о традиционном оленеводстве, покажут как правильно ухаживать за животными и познакомят с местными традициями. Можно попробовать себя в роли настоящего оленевода и даже покататься на оленьей упряжке.')">Подробнее</button>
+                </div>
+                <div class="gallery-content">
+                    <div class="image-gallery" data-gallery="6">
+                    <div class="gallery-image active" style="background-image: url({{ url_for('static', filename='images/') }}attraction-block/block-5/1.jpeg);"></div>
+                    <div class="gallery-image" style="background-image: url({{ url_for('static', filename='images/') }}attraction-block/block-5/2.jpeg);"></div>
+                    <div class="gallery-image" style="background-image: url({{ url_for('static', filename='images/') }}attraction-block/block-5/3.jpeg);"></div>
+                    <div class="gallery-image" style="background-image: url('{{ url_for('static', filename='images/') }}attraction-block/block-5/4.jpeg');"></div>
+                    <div class="gallery-image" style="background-image: url('{{ url_for('static', filename='images/') }}attraction-block/block-5/5.jpeg');"></div>
+                    
+                    </div>
+                    <div class="gallery-controls">
+                        <button class="arrow-btn prev-btn" onclick="changeImage(6, -1)">‹</button>
+                        <button class="arrow-btn next-btn" onclick="changeImage(6, 1)">›</button>
+                    </div>
+                </div>
+            </div>
 
-        <!-- Блок 7: Текст слева, фото справа -->
-                 <div class="attraction-block reverse">
-                     <div class="text-content">
-                         <h2>Кафе с традиционной кухней</h2>
-                         <p>Уютное кафе предлагает аутентичные блюда карельской кухни, приготовленные по старинным рецептам. В меню представлены щи с картофелем, рубцы, кулебяки и знаменитый карельский калья. Интерьер оформлен в традиционном стиле с использованием натуральных материалов. Особое внимание уделяется экологичности продуктов и сохранению кулинарных традиций региона. Все блюда готовятся из местных продуктов, выращенных в экологически чистых условиях.</p>
-                         <button class="read-more-btn" onclick="openTextModal('Кафе с традиционной кухней', 'Уютное кафе предлагает аутентичные блюда карельской кухни, приготовленные по старинным рецептам. В меню представлены щи с картофелем, рубцы, кулебяки и знаменитый карельский калья. Интерьер оформлен в традиционном стиле с использованием натуральных материалов. Особое внимание уделяется экологичности продуктов и сохранению кулинарных традиций региона. Все блюда готовятся из местных продуктов, выращенных в экологически чистых условиях. Помимо основного меню, предлагаются сезонные специалитеты, отражающие особенности каждого времени года. Здесь можно попробовать блюда, приготовленные по рецептам, переданным из поколения в поколение карельскими семьями.')">Подробнее</button>
-                     </div>
-                     <div class="gallery-content">
-                        <div class="image-gallery" data-gallery="7"><div class="gallery-image active" style="background-image: url({{ url_for('static', filename='images/') }}attraction-block/block-6/1.jpeg);"></div>
-                            <div class="gallery-image" style="background-image: url({{ url_for('static', filename='images/') }}attraction-block/block-6/2.jpeg);"></div>
-                            <div class="gallery-image" style="background-image: url({{ url_for('static', filename='images/') }}attraction-block/block-6/3.jpeg);"></div>
-                        </div>
-                         <div class="gallery-controls">
-                             <button class="arrow-btn prev-btn" onclick="changeImage(7, -1)">‹</button>
-                             <button class="arrow-btn next-btn" onclick="changeImage(7, 1)">›</button>
-                         </div>
-                     </div>
-                 </div>
+            <!-- Блок 6: Текст слева, фото справа -->
+            <div class="attraction-block reverse">
+                <div class="text-content">
+                    <h2>Кафе с традиционной кухней</h2>
+                    <p>Уютное кафе предлагает аутентичные блюда карельской кухни, приготовленные по старинным рецептам. В меню представлены щи с картофелем, рубцы, кулебяки и знаменитый карельский калья. Интерьер оформлен в традиционном стиле с использованием натуральных материалов. Особое внимание уделяется экологичности продуктов и сохранению кулинарных традиций региона. Все блюда готовятся из местных продуктов, выращенных в экологически чистых условиях.</p>
+                    <button class="read-more-btn" onclick="openTextModal('Кафе с традиционной кухней', 'Уютное кафе предлагает аутентичные блюда карельской кухни, приготовленные по старинным рецептам. В меню представлены щи с картофелем, рубцы, кулебяки и знаменитый карельский калья. Интерьер оформлен в традиционном стиле с использованием натуральных материалов. Особое внимание уделяется экологичности продуктов и сохранению кулинарных традиций региона. Все блюда готовятся из местных продуктов, выращенных в экологически чистых условиях. Помимо основного меню, предлагаются сезонные специалитеты, отражающие особенности каждого времени года. Здесь можно попробовать блюда, приготовленные по рецептам, переданным из поколения в поколение карельскими семьями.')">Подробнее</button>
+                </div>
+                <div class="gallery-content">
+                <div class="image-gallery" data-gallery="7"><div class="gallery-image active" style="background-image: url({{ url_for('static', filename='images/') }}attraction-block/block-6/1.jpeg);"></div>
+                    <div class="gallery-image" style="background-image: url({{ url_for('static', filename='images/') }}attraction-block/block-6/2.jpeg);"></div>
+                    <div class="gallery-image" style="background-image: url({{ url_for('static', filename='images/') }}attraction-block/block-6/3.jpeg);"></div>
+                </div>
+                    <div class="gallery-controls">
+                        <button class="arrow-btn prev-btn" onclick="changeImage(7, -1)">‹</button>
+                        <button class="arrow-btn next-btn" onclick="changeImage(7, 1)">›</button>
+                    </div>
+                </div>
+            </div>
 
-        <!-- Блок 8: Фото слева, текст справа -->
-                 <div class="attraction-block">
-                     <div class="text-content">
-                         <h2>Магазин сувениров и фермерских продуктов</h2>
-                         <p>Специализированный магазин предлагает широкий выбор сувениров ручной работы, созданных местными мастерами. Здесь можно приобрести изделия из бересты, резные деревянные фигурки, традиционные тканые изделия и ювелирные украшения с карельскими мотивами. Также представлены фермерские продукты: мед, ягодные варенья, травяные чаи и мясные деликатесы. Все товары сертифицированы и имеют документы происхождения.</p>
-                         <button class="read-more-btn" onclick="openTextModal('Магазин сувениров и фермерских продуктов', 'Специализированный магазин предлагает широкий выбор сувениров ручной работы, созданных местными мастерами. Здесь можно приобрести изделия из бересты, резные деревянные фигурки, традиционные тканые изделия и ювелирные украшения с карельскими мотивами. Также представлены фермерские продукты: мед, ягодные варенья, травяные чаи и мясные деликатесы. Все товары сертифицированы и имеют документы происхождения. Магазин сотрудничает напрямую с ремесленниками и фермерами региона, обеспечивая справедливую оплату труда и качественные материалы. Здесь же можно найти литературу о Карелии, открытки с видами парка и специальные наборы для творчества.')">Подробнее</button>
-                     </div>
-                     <div class="gallery-content">
-                         <div class="image-gallery" data-gallery="8">
+            <!-- Блок 7: Фото слева, текст справа -->
+            <div class="attraction-block">
+                <div class="text-content">
+                    <h2>Магазин сувениров и фермерских продуктов</h2>
+                    <p>Специализированный магазин предлагает широкий выбор сувениров ручной работы, созданных местными мастерами. Здесь можно приобрести изделия из бересты, резные деревянные фигурки, традиционные тканые изделия и ювелирные украшения с карельскими мотивами. Также представлены фермерские продукты: мед, ягодные варенья, травяные чаи и мясные деликатесы. Все товары сертифицированы и имеют документы происхождения.</p>
+                    <button class="read-more-btn" onclick="openTextModal('Магазин сувениров и фермерских продуктов', 'Специализированный магазин предлагает широкий выбор сувениров ручной работы, созданных местными мастерами. Здесь можно приобрести изделия из бересты, резные деревянные фигурки, традиционные тканые изделия и ювелирные украшения с карельскими мотивами. Также представлены фермерские продукты: мед, ягодные варенья, травяные чаи и мясные деликатесы. Все товары сертифицированы и имеют документы происхождения. Магазин сотрудничает напрямую с ремесленниками и фермерами региона, обеспечивая справедливую оплату труда и качественные материалы. Здесь же можно найти литературу о Карелии, открытки с видами парка и специальные наборы для творчества.')">Подробнее</button>
+                </div>
+                <div class="gallery-content">
+                    <div class="image-gallery" data-gallery="8">
 
-                             <div class="gallery-image active" style="background-image: url(images/attraction-block/block-7/1.jpeg);"></div>
-                             <div class="gallery-image" style="background-image: url({{ url_for('static', filename='images/') }}attraction-block/block-7/2.jpeg);"></div>
-                             <div class="gallery-image" style="background-image: url({{ url_for('static', filename='images/') }}attraction-block/block-7/3.jpeg);"></div>
-                             <div class="gallery-image" style="background-image: url({{ url_for('static', filename='images/') }}attraction-block/block-7/4.jpeg);"></div>
-                         </div>
-                         <div class="gallery-controls">
-                             <button class="arrow-btn prev-btn" onclick="changeImage(8, -1)">‹</button>
-                             <button class="arrow-btn next-btn" onclick="changeImage(8, 1)">›</button>
-                         </div>
-                     </div>
-                 </div>
+                        <div class="gallery-image active" style="background-image: url(images/attraction-block/block-7/1.jpeg);"></div>
+                        <div class="gallery-image" style="background-image: url({{ url_for('static', filename='images/') }}attraction-block/block-7/2.jpeg);"></div>
+                        <div class="gallery-image" style="background-image: url({{ url_for('static', filename='images/') }}attraction-block/block-7/3.jpeg);"></div>
+                        <div class="gallery-image" style="background-image: url({{ url_for('static', filename='images/') }}attraction-block/block-7/4.jpeg);"></div>
+                    </div>
+                    <div class="gallery-controls">
+                        <button class="arrow-btn prev-btn" onclick="changeImage(8, -1)">‹</button>
+                        <button class="arrow-btn next-btn" onclick="changeImage(8, 1)">›</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Блок 8: Фото слева, текст справа -->
+            <div class="attraction-block reverse">
+                <div class="text-content">
+                    <h2>Магазин сувениров и фермерских продуктов</h2>
+                    <p>Специализированный магазин предлагает широкий выбор сувениров ручной работы, созданных местными мастерами. Здесь можно приобрести изделия из бересты, резные деревянные фигурки, традиционные тканые изделия и ювелирные украшения с карельскими мотивами. Также представлены фермерские продукты: мед, ягодные варенья, травяные чаи и мясные деликатесы. Все товары сертифицированы и имеют документы происхождения.</p>
+                    <button class="read-more-btn" onclick="openTextModal('Магазин сувениров и фермерских продуктов', 'Специализированный магазин предлагает широкий выбор сувениров ручной работы, созданных местными мастерами. Здесь можно приобрести изделия из бересты, резные деревянные фигурки, традиционные тканые изделия и ювелирные украшения с карельскими мотивами. Также представлены фермерские продукты: мед, ягодные варенья, травяные чаи и мясные деликатесы. Все товары сертифицированы и имеют документы происхождения. Магазин сотрудничает напрямую с ремесленниками и фермерами региона, обеспечивая справедливую оплату труда и качественные материалы. Здесь же можно найти литературу о Карелии, открытки с видами парка и специальные наборы для творчества.')">Подробнее</button>
+                </div>
+                <div class="gallery-content">
+                    <div class="image-gallery" data-gallery="8">
+
+                        <div class="gallery-image active" style="background-image: url(images/attraction-block/block-7/1.jpeg);"></div>
+                        <div class="gallery-image" style="background-image: url({{ url_for('static', filename='images/') }}attraction-block/block-7/2.jpeg);"></div>
+                        <div class="gallery-image" style="background-image: url({{ url_for('static', filename='images/') }}attraction-block/block-7/3.jpeg);"></div>
+                        <div class="gallery-image" style="background-image: url({{ url_for('static', filename='images/') }}attraction-block/block-7/4.jpeg);"></div>
+                    </div>
+                    <div class="gallery-controls">
+                        <button class="arrow-btn prev-btn" onclick="changeImage(8, -1)">‹</button>
+                        <button class="arrow-btn next-btn" onclick="changeImage(8, 1)">›</button>
+                    </div>
+                </div>
+            </div>
 
         <!-- Блок галереи -->
         <section id="gallery" class="gallery-section">
@@ -725,5 +760,11 @@
 
     <!-- Скрипт в конце body для лучшей производительности -->
     <script src="{{ url_for('static', filename='js/') }}script.js" defer></script>
+    
+    <div class="admin-link" style="text-align: center; margin-top: 20px; opacity: 0.5;">
+        <a href="/login" style="color: #718096; text-decoration: none; font-size: 12px;">
+            Админ-панель
+        </a>
+    </div>                  
 </body>
 </html>
