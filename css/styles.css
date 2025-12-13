@@ -80,7 +80,7 @@ html {
 }
 
 body {
-    font-family: var(--font-thin);
+    font-family: var(--font-regular);
     line-height: 1.6;
     color: var(--text-color);
     overflow-x: hidden;
@@ -100,7 +100,7 @@ body {
 .contact-link,
 .contact-text,
 .hours-info p {
-    font-family: var(--font-thin);
+    font-family: var(--font-regular);
     font-weight: 100;
 }
 /* Логотип */
@@ -141,7 +141,7 @@ body {
 }
 
 .stat-label {
-    font-family: var(--font-thin);
+    font-family: var(--font-regular);
     font-size: 1rem;
     font-weight: 100;
 }
@@ -216,11 +216,11 @@ body {
 }
 
 .header.scrolled {
-    background: rgba(82, 91, 77, 0.95);
+    background: rgb(82 91 77 / 50%);
     backdrop-filter: blur(10px);
     padding: 0.75rem 3.125rem;
 }
-
+s
 .header.hidden {
     transform: translateY(-100%);
 }
@@ -613,7 +613,7 @@ body {
 }
 
 .about-text {
-    font-family: var(--font-thin);
+    font-family: var(--font-regular);
     font-size: 1.5rem;
     line-height: 1.8;
     color: var(--text-light);
@@ -662,7 +662,7 @@ body {
 }
 
 .stat-label {
-    font-family: var(--font-thin);
+    font-family: var(--font-regular);
     font-size: 1.2rem;
     color: var(--text-light);
     text-transform: uppercase;
@@ -2372,7 +2372,7 @@ body {
     }
     
     .reviews-gallery-container .image-gallery {
-        height: 350px;
+        height: 650px;
     }
     
     .emoji-overlay {
