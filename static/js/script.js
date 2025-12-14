@@ -879,74 +879,12 @@ const NavigationManager = {
 };
 
 // Галерея парка
+// Галерея парка
 const GalleryManager = {
     init() {
         this.initGalleryElements();
         this.loadGalleryData();
     },
-
-    galleryData: [
-             {
-                 type: 'image',
-                 src: './images/gallery-section/1.jpeg',
-                 alt: 'Вид на водопад в парке'
-             },
-             {
-                 type: 'image',
-                 src: './images/gallery-section/2.jpeg',
-                 alt: 'Лесная тропа'
-             },
-             {
-                 type: 'image',
-                 src: './images/gallery-section/3.jpeg',
-                 alt: 'Лесная тропа'
-             },
-             {
-                 type: 'image',
-                 src: './images/gallery-section/4.jpeg',
-                 alt: 'Лесная тропа'
-             },
-             {
-                 type: 'image',
-                 src: './images/gallery-section/5.jpeg',
-                 alt: 'Лесная тропа'
-             },
-             {
-                 type: 'image',
-                 src: './images/gallery-section/6.jpeg',
-                 alt: 'Лесная тропа'
-             },
-             {
-                 type: 'image',
-                 src: './images/gallery-section/7.jpeg',
-                 alt: 'Лесная тропа'
-             },
-             {
-                 type: 'image',
-                 src: './images/gallery-section/8.jpeg',
-                 alt: 'Лесная тропа'
-             },
-             {
-                 type: 'image',
-                 src: './images/gallery-section/9.jpeg',
-                 alt: 'Лесная тропа'
-             },
-             {
-                 type: 'image',
-                 src: './images/gallery-section/10.jpeg',
-                 alt: 'Лесная тропа'
-             },
-             {
-                 type: 'image',
-                 src: './images/gallery-section/11.jpeg',
-                 alt: 'Лесная тропа'
-             },
-             {
-                 type: 'image',
-                 src: './images/gallery-section/12.jpeg',
-                 alt: 'Лесная тропа'
-             }
-         ],
 
     initGalleryElements() {
         this.galleryGrid = document.getElementById('galleryGrid');
@@ -996,20 +934,58 @@ const GalleryManager = {
     loadGalleryData() {
         if (!this.galleryGrid) return;
 
+        // Показываем индикатор загрузки
+        this.galleryGrid.innerHTML = `
+            <div style="text-align: center; padding: 40px; color: #718096; grid-column: 1 / -1;">
+                <div class="loading" style="margin: 0 auto 15px;"></div>
+                <p>Загрузка галереи...</p>
+            </div>
+        `;
+        
+        // Загружаем данные галереи с сервера
+        fetch('/gallery-data')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && data.images) {
+                    this.renderGallery(data.images);
+                } else {
+                    this.showError();
+                }
+            })
+            .catch(error => {
+                console.error('Error loading gallery:', error);
+                this.showError();
+            });
+    },
+
+    renderGallery(images) {
+        if (!this.galleryGrid) return;
+
         // Очищаем контейнер
         this.galleryGrid.innerHTML = '';
         
-        // Добавляем элементы в галерею
-        this.galleryData.forEach((item, index) => {
+        if (!images || images.length === 0) {
+            this.galleryGrid.innerHTML = `
+                <div style="text-align: center; padding: 40px; color: #718096; grid-column: 1 / -1;">
+                    <div style="font-size: 48px; margin-bottom: 15px;">🖼️</div>
+                    <p>Галерея пуста</p>
+                    <p style="font-size: 14px; margin-top: 10px;">Изображения скоро появятся</p>
+                </div>
+            `;
+            STATE.galleryData = [];
+            return;
+        }
+        
+        // Создаем элементы галереи
+        images.forEach((image, index) => {
             const galleryItem = document.createElement('div');
             galleryItem.className = 'gallery-item';
             galleryItem.setAttribute('data-index', index);
             
-            if (item.type === 'image') {
-                galleryItem.innerHTML = `
-                    <img class="gallery-img" src="${item.src}" alt="${item.alt}" loading="lazy">
-                `;
-            }
+            galleryItem.innerHTML = `
+                <img class="gallery-img" src="/static/${image.path}" alt="${image.alt || 'Фотография парка'}" 
+                     loading="lazy" style="width: 100%; height: 250px; object-fit: cover; border-radius: 8px;">
+            `;
             
             this.galleryGrid.appendChild(galleryItem);
             
@@ -1017,7 +993,28 @@ const GalleryManager = {
             galleryItem.addEventListener('click', () => this.openMediaPopup(index));
         });
 
-        STATE.galleryData = this.galleryData;
+        // Сохраняем данные в STATE
+        STATE.galleryData = images.map(img => ({
+            type: 'image',
+            src: `/static/${img.path}`,
+            alt: img.alt || 'Фотография парка'
+        }));
+    },
+
+    showError() {
+        if (!this.galleryGrid) return;
+        
+        this.galleryGrid.innerHTML = `
+            <div style="text-align: center; padding: 40px; color: #e53e3e; grid-column: 1 / -1;">
+                <div style="font-size: 48px; margin-bottom: 15px;">⚠️</div>
+                <p>Ошибка загрузки галереи</p>
+                <button onclick="GalleryManager.loadGalleryData()" 
+                        style="margin-top: 15px; padding: 8px 16px; background: #4299e1; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                    Попробовать снова
+                </button>
+            </div>
+        `;
+        STATE.galleryData = [];
     },
 
     // Открытие попапа с медиа

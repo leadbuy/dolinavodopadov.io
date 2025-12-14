@@ -9,7 +9,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Элементы интерфейса
-            const saveButtons = document.querySelectorAll('.save-btn');
+            const saveButtons = document.querySelectorAll('.save-btn[data-section]');
             const textareas = document.querySelectorAll('textarea');
             
             // Счетчики символов
@@ -24,23 +24,26 @@
                 }
             });
             
-            // Обработка сохранения
+            // Обработка сохранения - только для кнопок с data-section
             saveButtons.forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const section = this.dataset.section;
-                    const fields = {};
-                    
-                    // Собираем данные из формы
-                    const form = this.closest('.admin-section');
-                    const inputs = form.querySelectorAll('input, textarea');
-                    inputs.forEach(input => {
-                        if (input.name) {
-                            fields[input.name] = input.value;
-                        }
+                // Проверяем, есть ли у кнопки атрибут data-section
+                if (btn.dataset.section) {
+                    btn.addEventListener('click', function() {
+                        const section = this.dataset.section;
+                        const fields = {};
+                        
+                        // Собираем данные из формы
+                        const form = this.closest('.admin-section');
+                        const inputs = form.querySelectorAll('input, textarea');
+                        inputs.forEach(input => {
+                            if (input.name) {
+                                fields[input.name] = input.value;
+                            }
+                        });
+                        
+                        saveContent(section, fields, this);
                     });
-                    
-                    saveContent(section, fields, this);
-                });
+                }
             });
             
             // Смена пароля
@@ -67,6 +70,12 @@
         });
         
         function saveContent(section, data, button) {
+            // Проверяем, указан ли раздел
+            if (!section) {
+                showNotification('Ошибка: Не указан раздел для сохранения', 'error');
+                return;
+            }
+            
             const originalText = button.textContent;
             
             button.disabled = true;
@@ -331,6 +340,723 @@
                 });
             }
         });
+
+
+        // Переменные для работы с достопримечательностями
+        let currentAttractionId = null;
+        let currentAttractionImages = [];
+
+        // Загрузка списка достопримечательностей
+        function loadAttractions() {
+            fetch('/admin/attractions')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        renderAttractionsList(data.attractions);
+                    } else {
+                        showNotification('Ошибка загрузки: ' + data.message, 'error');
+                    }
+                })
+                .catch(error => {
+                    showNotification('Ошибка сети: ' + error.message, 'error');
+                });
+        }
+
+        // Отображение списка достопримечательностей
+        function renderAttractionsList(attractions) {
+            const container = document.getElementById('attractionsList');
+            
+            if (!attractions || attractions.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: #718096;">
+                        <i style="font-size: 48px; display: block; margin-bottom: 15px;">🏞️</i>
+                        <p style="font-size: 16px;">Нет достопримечательностей</p>
+                        <p style="font-size: 14px; margin-top: 10px;">Добавьте первую достопримечательность</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Сортируем по порядку
+            attractions.sort((a, b) => (a.order || 0) - (b.order || 0));
+            
+            let html = '<div class="attractions-list-sortable" id="sortableAttractions">';
+            
+            attractions.forEach(attraction => {
+                const imagesCount = attraction.images_list ? attraction.images_list.length : 0;
+                const layoutText = attraction.layout === 'text_right' ? 'Текст справа' : 'Текст слева';
+                
+                html += `
+                    <div class="attraction-item" data-id="${attraction.id}" id="attraction-${attraction.id}">
+                        <div style="display: flex; align-items: center; gap: 15px;">
+                            <div class="drag-handle" title="Перетащите для изменения порядка">⋮⋮</div>
+                            <div class="attraction-info">
+                                <div class="attraction-title">${attraction.title}</div>
+                                <div class="attraction-details">
+                                    <div class="attraction-detail">
+                                        <span>📁</span>
+                                        <span>${attraction.folder}</span>
+                                    </div>
+                                    <div class="attraction-detail">
+                                        <span>🖼️</span>
+                                        <span>${imagesCount} изображений</span>
+                                    </div>
+                                    <div class="attraction-detail">
+                                        <span>📐</span>
+                                        <span>${layoutText}</span>
+                                    </div>
+                                    <div class="attraction-detail">
+                                        <span>🔢</span>
+                                        <span>Порядок: ${attraction.order || 1}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="attraction-actions">
+                            <button class="attraction-action-btn move" onclick="moveAttraction(${attraction.id}, 'up')" title="Поднять">
+                                ↑
+                            </button>
+                            <button class="attraction-action-btn move" onclick="moveAttraction(${attraction.id}, 'down')" title="Опустить">
+                                ↓
+                            </button>
+                            <button class="attraction-action-btn edit" onclick="editAttraction(${attraction.id})" title="Редактировать">
+                                ✏️ Редактировать
+                            </button>
+                            <button class="attraction-action-btn images" onclick="manageAttractionImages(${attraction.id})" title="Управление изображениями">
+                                🖼️ Изображения
+                            </button>
+                            <button class="attraction-action-btn delete" onclick="deleteAttraction(${attraction.id})" title="Удалить">
+                                🗑️ Удалить
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+            container.innerHTML = html;
+            
+            // Инициализация сортировки
+            initSortable();
+        }
+
+        // Инициализация перетаскивания для изменения порядка
+        function initSortable() {
+            const sortable = document.getElementById('sortableAttractions');
+            if (!sortable) return;
+            
+            let draggedItem = null;
+            
+            // Добавляем обработчики событий для перетаскивания
+            const items = sortable.querySelectorAll('.attraction-item');
+            
+            items.forEach(item => {
+                item.setAttribute('draggable', true);
+                
+                item.addEventListener('dragstart', function(e) {
+                    draggedItem = this;
+                    setTimeout(() => this.style.opacity = '0.4', 0);
+                    e.dataTransfer.effectAllowed = 'move';
+                    e.dataTransfer.setData('text/html', this.innerHTML);
+                });
+                
+                item.addEventListener('dragover', function(e) {
+                    e.preventDefault();
+                    e.dataTransfer.dropEffect = 'move';
+                });
+                
+                item.addEventListener('dragenter', function(e) {
+                    e.preventDefault();
+                    if (this !== draggedItem) {
+                        this.style.borderTop = '2px solid #667eea';
+                    }
+                });
+                
+                item.addEventListener('dragleave', function() {
+                    this.style.borderTop = '';
+                });
+                
+                item.addEventListener('drop', function(e) {
+                    e.preventDefault();
+                    if (this !== draggedItem) {
+                        sortable.insertBefore(draggedItem, this);
+                        
+                        // Обновляем порядок после перетаскивания
+                        updateAttractionsOrder();
+                    }
+                    this.style.borderTop = '';
+                });
+                
+                item.addEventListener('dragend', function() {
+                    this.style.opacity = '';
+                    items.forEach(item => item.style.borderTop = '');
+                });
+            });
+        }
+
+        // Обновление порядка достопримечательностей
+        function updateAttractionsOrder() {
+            const items = document.querySelectorAll('.attraction-item');
+            const order = [];
+            
+            items.forEach(item => {
+                const id = parseInt(item.getAttribute('data-id'));
+                if (id) order.push(id);
+            });
+            
+            fetch('/admin/attractions/order', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ order: order })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showNotification('Порядок обновлен', 'success');
+                    // Перезагружаем список для обновления номеров
+                    loadAttractions();
+                } else {
+                    showNotification('Ошибка: ' + data.message, 'error');
+                }
+            })
+            .catch(error => {
+                showNotification('Ошибка сети: ' + error.message, 'error');
+            });
+        }
+
+        // Перемещение достопримечательности вверх/вниз
+        function moveAttraction(id, direction) {
+            const container = document.getElementById('sortableAttractions');
+            const items = Array.from(container.querySelectorAll('.attraction-item'));
+            const currentIndex = items.findIndex(item => parseInt(item.getAttribute('data-id')) === id);
+            
+            if (direction === 'up' && currentIndex > 0) {
+                container.insertBefore(items[currentIndex], items[currentIndex - 1]);
+                updateAttractionsOrder();
+            } else if (direction === 'down' && currentIndex < items.length - 1) {
+                container.insertBefore(items[currentIndex + 1], items[currentIndex]);
+                updateAttractionsOrder();
+            }
+        }
+
+        // Показать модальное окно для добавления достопримечательности
+        function showAddAttractionModal() {
+            document.getElementById('attractionModalTitle').textContent = 'Новая достопримечательность';
+            document.getElementById('attractionId').value = '';
+            document.getElementById('attractionTitle').value = '';
+            document.getElementById('attractionDescription').value = '';
+            document.getElementById('attractionDetailed').value = '';
+            document.getElementById('attractionOrder').value = '';
+            document.querySelector('input[name="layout"][value="text_left"]').checked = true;
+            
+            document.getElementById('attractionModal').style.display = 'block';
+        }
+
+        // Показать модальное окно для редактирования достопримечательности
+        function editAttraction(id) {
+            fetch('/admin/attractions')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const attraction = data.attractions.find(a => a.id === id);
+                        if (attraction) {
+                            document.getElementById('attractionModalTitle').textContent = 'Редактирование достопримечательности';
+                            document.getElementById('attractionId').value = attraction.id;
+                            document.getElementById('attractionTitle').value = attraction.title || '';
+                            document.getElementById('attractionDescription').value = attraction.description || '';
+                            document.getElementById('attractionDetailed').value = attraction.detailed_description || '';
+                            document.getElementById('attractionOrder').value = attraction.order || '';
+                            
+                            // Устанавливаем выбранный layout
+                            const layout = attraction.layout || 'text_left';
+                            document.querySelector(`input[name="layout"][value="${layout}"]`).checked = true;
+                            
+                            document.getElementById('attractionModal').style.display = 'block';
+                        }
+                    }
+                });
+        }
+
+        // Закрыть модальное окно достопримечательности
+        function closeAttractionModal() {
+            document.getElementById('attractionModal').style.display = 'none';
+        }
+
+        // Сохранить достопримечательность
+        function saveAttraction(event) {
+            event.preventDefault();
+            
+            const id = document.getElementById('attractionId').value;
+            const title = document.getElementById('attractionTitle').value;
+            const description = document.getElementById('attractionDescription').value;
+            const detailed = document.getElementById('attractionDetailed').value;
+            const order = parseInt(document.getElementById('attractionOrder').value) || 1;
+            const layout = document.querySelector('input[name="layout"]:checked').value;
+            
+            const data = {
+                title: title,
+                description: description,
+                detailed_description: detailed,
+                order: order,
+                layout: layout
+            };
+            
+            const url = id ? `/admin/attractions/${id}` : '/admin/attractions';
+            const method = id ? 'PUT' : 'POST';
+            
+            fetch(url, {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showNotification(data.message, 'success');
+                    closeAttractionModal();
+                    loadAttractions(); // Перезагружаем список
+                } else {
+                    showNotification('Ошибка: ' + data.message, 'error');
+                }
+            })
+            .catch(error => {
+                showNotification('Ошибка сети: ' + error.message, 'error');
+            });
+        }
+
+        // Удалить достопримечательность
+        function deleteAttraction(id) {
+            if (!confirm('Вы уверены, что хотите удалить эту достопримечательность? Все изображения также будут удалены.')) {
+                return;
+            }
+            
+            fetch(`/admin/attractions/${id}`, {
+                method: 'DELETE'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showNotification(data.message, 'success');
+                    loadAttractions(); // Перезагружаем список
+                } else {
+                    showNotification('Ошибка: ' + data.message, 'error');
+                }
+            })
+            .catch(error => {
+                showNotification('Ошибка сети: ' + error.message, 'error');
+            });
+        }
+
+        // Управление изображениями достопримечательности
+        function manageAttractionImages(id) {
+            currentAttractionId = id;
+            
+            // Загружаем информацию о достопримечательности для отображения названия
+            fetch('/admin/attractions')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const attraction = data.attractions.find(a => a.id === id);
+                        if (attraction) {
+                            document.getElementById('imagesModalTitle').textContent = `Изображения: ${attraction.title}`;
+                            loadAttractionImages(id);
+                            document.getElementById('imagesModal').style.display = 'block';
+                        }
+                    }
+                });
+        }
+
+        // Закрыть модальное окно изображений
+        function closeImagesModal() {
+            document.getElementById('imagesModal').style.display = 'none';
+            currentAttractionId = null;
+            currentAttractionImages = [];
+        }
+
+        // Загрузить изображения достопримечательности
+        function loadAttractionImages(attractionId) {
+            const container = document.getElementById('attractionImagesList');
+            container.innerHTML = '<div style="text-align: center; padding: 20px;"><div class="loading"></div><p>Загрузка изображений...</p></div>';
+            
+            fetch('/admin/attractions')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const attraction = data.attractions.find(a => a.id === attractionId);
+                        if (attraction && attraction.images_list) {
+                            currentAttractionImages = attraction.images_list;
+                            renderAttractionImages(attraction.images_list);
+                        } else {
+                            container.innerHTML = '<div style="text-align: center; padding: 20px; color: #718096;"><p>Нет изображений</p></div>';
+                        }
+                    }
+                })
+                .catch(error => {
+                    container.innerHTML = `<div style="text-align: center; padding: 20px; color: #e53e3e;"><p>Ошибка загрузки: ${error.message}</p></div>`;
+                });
+        }
+
+        // Отобразить изображения достопримечательности
+        function renderAttractionImages(images) {
+            const container = document.getElementById('attractionImagesList');
+            
+            if (!images || images.length === 0) {
+                container.innerHTML = '<div style="text-align: center; padding: 20px; color: #718096;"><p>Нет изображений</p></div>';
+                return;
+            }
+            
+            let html = '<div class="images-grid">';
+            
+            images.forEach((image, index) => {
+                // Получаем путь к изображению
+                const imagePath = `/static/images/attraction-block/block-${currentAttractionId}/${image}`;
+                
+                html += `
+                    <div class="image-item">
+                        <div class="image-preview" style="background-image: url('${imagePath}')"></div>
+                        <div class="image-info">
+                            <div class="image-filename" title="${image}">${image}</div>
+                            <div class="image-actions">
+                                <button class="image-action-btn delete" onclick="deleteAttractionImage('${image}')">
+                                    Удалить
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
+        // Загрузка изображений для достопримечательности
+        function handleAttractionImageUpload() {
+            const files = document.getElementById('attractionImageUpload').files;
+            if (!files.length || !currentAttractionId) return;
+            
+            const progressBar = document.getElementById('attractionUploadBar');
+            const progressContainer = document.getElementById('attractionUploadProgress');
+            
+            progressContainer.style.display = 'block';
+            progressBar.style.width = '0%';
+            
+            let uploadedCount = 0;
+            const totalFiles = files.length;
+            
+            Array.from(files).forEach((file, index) => {
+                const formData = new FormData();
+                formData.append('image', file);
+                
+                fetch(`/admin/attractions/${currentAttractionId}/images`, {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    uploadedCount++;
+                    progressBar.style.width = `${(uploadedCount / totalFiles) * 100}%`;
+                    
+                    if (uploadedCount === totalFiles) {
+                        showNotification(`Загружено ${uploadedCount} изображений`, 'success');
+                        
+                        // Скрываем прогресс через 1 секунду
+                        setTimeout(() => {
+                            progressContainer.style.display = 'none';
+                        }, 1000);
+                        
+                        // Перезагружаем список изображений
+                        loadAttractionImages(currentAttractionId);
+                        
+                        // Сбрасываем поле файла
+                        document.getElementById('attractionImageUpload').value = '';
+                    }
+                })
+                .catch(error => {
+                    showNotification('Ошибка загрузки: ' + error.message, 'error');
+                    progressContainer.style.display = 'none';
+                });
+            });
+        }
+
+        // Удаление изображения достопримечательности
+        function deleteAttractionImage(filename) {
+            if (!confirm('Удалить это изображение?')) return;
+            
+            fetch(`/admin/attractions/${currentAttractionId}/images/${encodeURIComponent(filename)}`, {
+                method: 'DELETE'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showNotification('Изображение удалено', 'success');
+                    // Обновляем список изображений
+                    loadAttractionImages(currentAttractionId);
+                } else {
+                    showNotification('Ошибка: ' + data.message, 'error');
+                }
+            })
+            .catch(error => {
+                showNotification('Ошибка сети: ' + error.message, 'error');
+            });
+        }
+
+        // Инициализация при загрузке страницы
+        document.addEventListener('DOMContentLoaded', function() {
+            // Загружаем достопримечательности
+            loadAttractions();
+            
+            // Счетчики символов для текстовых полей
+            const textareas = document.querySelectorAll('#attractionDescription, #attractionDetailed');
+            textareas.forEach(textarea => {
+                textarea.addEventListener('input', function() {
+                    const counter = this.parentElement.querySelector('.char-counter');
+                    if (counter) {
+                        counter.textContent = `${this.value.length}/${this.getAttribute('maxlength') || 1000}`;
+                    }
+                });
+            });
+        });
+
+// Функции для работы с галереей
+function loadGalleryImages() {
+    fetch('/admin/gallery')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                renderGalleryImages(data.images);
+            } else {
+                showNotification('Ошибка загрузки галереи: ' + data.message, 'error');
+            }
+        })
+        .catch(error => {
+            showNotification('Ошибка сети при загрузке галереи: ' + error.message, 'error');
+        });
+}
+
+function renderGalleryImages(images) {
+    const container = document.getElementById('galleryImagesList');
+    
+    if (!images || images.length === 0) {
+        container.innerHTML = `
+            <div style="background: #fed7d7; padding: 30px; border-radius: 8px; text-align: center; border: 1px solid #fc8181;">
+                <i style="font-size: 48px; color: #c53030; margin-bottom: 15px; display: block;">📷</i>
+                <p style="color: #c53030; margin: 0; font-size: 16px;">
+                    ⚠️ В галерее нет изображений!
+                </p>
+                <p style="color: #c53030; margin-top: 10px; font-size: 14px;">
+                    Загрузите первое изображение с помощью формы выше
+                </p>
+            </div>
+        `;
+        
+        document.getElementById('galleryCount').textContent = '0';
+        document.getElementById('gallerySize').textContent = '0';
+        return;
+    }
+    
+    // Обновляем счетчики
+    const totalSizeMB = (images.reduce((sum, img) => sum + img.size, 0) / (1024*1024)).toFixed(2);
+    document.getElementById('galleryCount').textContent = images.length;
+    document.getElementById('gallerySize').textContent = totalSizeMB;
+    
+    let html = `
+        <div style="background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; max-height: 400px; overflow-y: auto;">
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px;">
+    `;
+    
+    images.forEach((image, index) => {
+        const sizeKB = (image.size / 1024).toFixed(1);
+        
+        html += `
+            <div class="image-card" style="background: white; border-radius: 8px; overflow: hidden; border: 1px solid #e2e8f0;">
+                <div style="height: 120px; background: #f7fafc; position: relative; display: flex; align-items: center; justify-content: center;">
+                    <div style="text-align: center; color: #4a5568; font-size: 14px;">
+                        <div style="font-size: 32px; margin-bottom: 5px;">🖼️</div>
+                        <div>${index + 1}. ${image.filename.substring(0, 15)}${image.filename.length > 15 ? '...' : ''}</div>
+                    </div>
+                </div>
+                <div style="padding: 10px;">
+                    <div style="font-weight: 600; color: #2d3748; margin-bottom: 5px; font-size: 13px; word-break: break-all;">
+                        ${image.filename}
+                    </div>
+                    <div style="display: flex; justify-content: space-between; font-size: 11px; color: #718096; margin-bottom: 10px;">
+                        <span>${sizeKB} KB</span>
+                        <span>№ ${index + 1}</span>
+                    </div>
+                    <button onclick="deleteGalleryImage('${image.filename}')" 
+                            class="delete-btn" 
+                            style="width: 100%; background: #fed7d7; color: #c53030; border: none; padding: 8px; border-radius: 4px; cursor: pointer; font-size: 12px;">
+                        Удалить из галереи
+                    </button>
+                </div>
+            </div>
+        `;
+    });
+    
+    html += `
+            </div>
+        </div>
+        <p style="margin-top: 10px; color: #48bb78; font-size: 14px;">
+            ✓ Найдено ${images.length} изображений в галерее
+        </p>
+    `;
+    
+    container.innerHTML = html;
+}
+
+function handleGalleryImageUpload(file) {
+    if (!file) return;
+    
+    // Проверка размера файла
+    if (file.size > MAX_FILE_SIZE) {
+        showNotification('Файл слишком большой. Максимальный размер: 16MB', 'error');
+        return;
+    }
+    
+    // Проверка типа файла
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+    if (!allowedTypes.includes(file.type)) {
+        showNotification('Неподдерживаемый формат файла', 'error');
+        return;
+    }
+    
+    // Показываем прогресс загрузки
+    const uploadProgress = document.getElementById('galleryUploadProgress');
+    const uploadBar = document.getElementById('galleryUploadBar');
+    uploadProgress.style.display = 'block';
+    uploadBar.style.width = '0%';
+    
+    // Создаем FormData
+    const formData = new FormData();
+    formData.append('image', file);
+    
+    // Отправляем запрос
+    fetch('/admin/gallery/upload', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(result => {
+        if (result.success) {
+            uploadBar.style.width = '100%';
+            showNotification('Изображение успешно загружено в галерею!', 'success');
+            
+            // Обновляем список изображений через 1.5 секунды
+            setTimeout(() => {
+                loadGalleryImages();
+            }, 1500);
+        } else {
+            showNotification('Ошибка: ' + result.message, 'error');
+            uploadProgress.style.display = 'none';
+        }
+    })
+    .catch(error => {
+        showNotification('Ошибка сети: ' + error.message, 'error');
+        uploadProgress.style.display = 'none';
+    })
+    .finally(() => {
+        // Сброс поля файла
+        document.getElementById('galleryImageUpload').value = '';
+        
+        // Скрываем прогресс через некоторое время
+        if (uploadBar.style.width === '100%') {
+            setTimeout(() => {
+                uploadProgress.style.display = 'none';
+            }, 1000);
+        }
+    });
+    
+    // Имитация прогресса для UX
+    let progress = 0;
+    const interval = setInterval(() => {
+        progress += 5;
+        uploadBar.style.width = progress + '%';
+        if (progress >= 90) clearInterval(interval);
+    }, 100);
+}
+
+function deleteGalleryImage(filename) {
+    if (!confirm(`Вы уверены, что хотите удалить изображение "${filename}" из галереи?`)) {
+        return;
+    }
+    
+    showNotification('Удаление изображения из галереи...', 'success');
+    
+    fetch('/admin/gallery/delete', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            filename: filename
+        })
+    })
+    .then(response => response.json())
+    .then(result => {
+        if (result.success) {
+            showNotification('Изображение успешно удалено из галереи!', 'success');
+            
+            // Обновляем список изображений через 1.5 секунды
+            setTimeout(() => {
+                loadGalleryImages();
+            }, 1500);
+        } else {
+            showNotification('Ошибка: ' + result.message, 'error');
+        }
+    })
+    .catch(error => {
+        showNotification('Ошибка сети: ' + error.message, 'error');
+    });
+}
+
+// Обновляем инициализацию при загрузке страницы
+document.addEventListener('DOMContentLoaded', function() {
+    // Загружаем галерею
+    loadGalleryImages();
+    
+    // Добавляем обработчик drag and drop для галереи
+    const galleryUploadArea = document.querySelector('#galleryImagesList').closest('.image-management')?.querySelector('.upload-area');
+    const galleryFileInput = document.getElementById('galleryImageUpload');
+    
+    if (galleryUploadArea && galleryFileInput) {
+        galleryUploadArea.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            galleryUploadArea.style.borderColor = '#667eea';
+            galleryUploadArea.style.backgroundColor = '#ebf8ff';
+        });
+        
+        galleryUploadArea.addEventListener('dragleave', function(e) {
+            e.preventDefault();
+            galleryUploadArea.style.borderColor = '#cbd5e0';
+            galleryUploadArea.style.backgroundColor = '#f8fafc';
+        });
+        
+        galleryUploadArea.addEventListener('drop', function(e) {
+            e.preventDefault();
+            galleryUploadArea.style.borderColor = '#cbd5e0';
+            galleryUploadArea.style.backgroundColor = '#f8fafc';
+            
+            if (e.dataTransfer.files.length) {
+                handleGalleryImageUpload(e.dataTransfer.files[0]);
+            }
+        });
+        
+        galleryUploadArea.addEventListener('click', function(e) {
+            if (e.target.tagName !== 'BUTTON') {
+                galleryFileInput.click();
+            }
+        });
+    }
+});
+
+// Объявляем глобально для использования в onchange
+window.handleGalleryImageUpload = handleGalleryImageUpload;
+
     </script>
 </head>
 <body>
@@ -565,6 +1291,206 @@
             </div>
         </section>
 
+        <!-- Раздел управления достопримечательностями -->
+        <section class="admin-section attractions-admin-section">
+            <div class="section-header">
+                <h2><i>🏞️</i> Управление достопримечательностями</h2>
+                <button class="save-btn" onclick="showAddAttractionModal()">
+                    <i>+</i> Добавить достопримечательность
+                </button>
+            </div>
+            
+            <div class="attractions-list-container">
+                <!-- Список достопримечательностей -->
+                <div class="attractions-list" id="attractionsList">
+                    <!-- Загрузка достопримечательностей через JavaScript -->
+                    <div style="text-align: center; padding: 40px;">
+                        <div class="loading"></div>
+                        <p>Загрузка достопримечательностей...</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Модальное окно для добавления/редактирования достопримечательности -->
+        <div class="modal" id="attractionModal" style="display: none;">
+            <div class="modal-content" style="max-width: 800px;">
+                <button class="close" onclick="closeAttractionModal()">×</button>
+                <h2 id="attractionModalTitle">Новая достопримечательность</h2>
+                
+                <form id="attractionForm" onsubmit="saveAttraction(event)">
+                    <input type="hidden" id="attractionId" value="">
+                    
+                    <div class="form-group">
+                        <label for="attractionTitle">Заголовок *</label>
+                        <input type="text" id="attractionTitle" required placeholder="Введите заголовок">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="attractionDescription">Краткое описание *</label>
+                        <textarea id="attractionDescription" rows="4" required placeholder="Краткое описание (отображается на странице)"></textarea>
+                        <div class="char-counter">0/1000</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="attractionDetailed">Подробное описание</label>
+                        <textarea id="attractionDetailed" rows="6" placeholder="Подробное описание (отображается в попапе)"></textarea>
+                        <div class="char-counter">0/2000</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Расположение текста</label>
+                        <div class="radio-group">
+                            <label class="radio-label">
+                                <input type="radio" name="layout" value="text_left" checked>
+                                <span>Текст слева, фото справа</span>
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="layout" value="text_right">
+                                <span>Текст справа, фото слева</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Порядок отображения</label>
+                        <input type="number" id="attractionOrder" min="1" value="1">
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="save-btn">Сохранить</button>
+                        <button type="button" class="cancel-btn" onclick="closeAttractionModal()">Отмена</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Модальное окно для управления изображениями -->
+        <div class="modal" id="imagesModal" style="display: none;">
+            <div class="modal-content" style="max-width: 900px;">
+                <button class="close" onclick="closeImagesModal()">×</button>
+                <h2 id="imagesModalTitle">Управление изображениями</h2>
+                
+                <div class="images-management">
+                    <!-- Форма загрузки изображений -->
+                    <div class="upload-area" style="margin-bottom: 20px;">
+                        <input type="file" id="attractionImageUpload" accept=".jpg,.jpeg,.png,.gif,.webp" multiple 
+                            style="display: none;" onchange="handleAttractionImageUpload()">
+                        <button onclick="document.getElementById('attractionImageUpload').click()" 
+                                class="save-btn" style="background: #4299e1;">
+                            📁 Загрузить изображения
+                        </button>
+                        <p style="font-size: 12px; color: #718096; margin-top: 10px;">
+                            Можно выбрать несколько файлов. Максимальный размер: 16MB
+                        </p>
+                    </div>
+                    
+                    <!-- Прогресс загрузки -->
+                    <div id="attractionUploadProgress" style="display: none; margin-bottom: 20px;">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <div class="loading"></div>
+                            <span>Загрузка...</span>
+                        </div>
+                        <div style="width: 100%; height: 4px; background: #e2e8f0; border-radius: 2px; margin-top: 10px;">
+                            <div id="attractionUploadBar" style="width: 0%; height: 100%; background: #48bb78; border-radius: 2px; transition: width 0.3s;"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Список изображений -->
+                    <div class="images-list" id="attractionImagesList">
+                        <div style="text-align: center; padding: 20px;">
+                            <p>Загрузка изображений...</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="modal-actions">
+                    <button type="button" class="cancel-btn" onclick="closeImagesModal()">Закрыть</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Раздел управления галереей парка -->
+        <section class="admin-section">
+            <div class="section-header">
+                <h2><i>🏞️</i> Управление галереей парка</h2>
+                <div class="saved-status" style="display: flex; align-items: center; gap: 5px;">
+                    <span style="color: #48bb78;">✓</span>
+                    <span>Изображения загружаются автоматически</span>
+                </div>
+            </div>
+            
+            <div class="image-management">
+                <div class="form-group">
+                    <label>Загрузить новое изображение в галерею:</label>
+                    <div class="upload-area" style="border: 2px dashed #cbd5e0; border-radius: 8px; padding: 30px; text-align: center; background: #f8fafc; margin-bottom: 20px;">
+                        <div style="margin-bottom: 15px;">
+                            <i style="font-size: 48px; color: #667eea;">🖼️</i>
+                        </div>
+                        <p style="color: #4a5568; margin-bottom: 15px;">
+                            Перетащите изображение сюда или нажмите для выбора
+                        </p>
+                        <input type="file" id="galleryImageUpload" accept=".jpg,.jpeg,.png,.gif,.webp" 
+                            style="display: none;" onchange="handleGalleryImageUpload(this.files[0])">
+                        <button onclick="document.getElementById('galleryImageUpload').click()" 
+                                class="save-btn" style="background: #4299e1; margin: 0 auto;">
+                            Выбрать файл
+                        </button>
+                        <div id="galleryUploadProgress" style="display: none; margin-top: 15px;">
+                            <div style="display: flex; align-items: center; gap: 10px; justify-content: center;">
+                                <div class="loading"></div>
+                                <span>Загрузка...</span>
+                            </div>
+                            <div style="width: 100%; height: 4px; background: #e2e8f0; border-radius: 2px; margin-top: 10px;">
+                                <div id="galleryUploadBar" style="width: 0%; height: 100%; background: #48bb78; border-radius: 2px; transition: width 0.3s;"></div>
+                            </div>
+                        </div>
+                        <p style="font-size: 12px; color: #718096; margin-top: 15px;">
+                            Поддерживаемые форматы: JPG, JPEG, PNG, GIF, WEBP<br>
+                            Максимальный размер: 16MB<br>
+                            <strong>Изображения автоматически появятся на сайте в разделе "Галерея парка"</strong>
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- Список изображений галереи -->
+                <div class="form-group">
+                    <label>Текущие изображения в галерее:</label>
+                    <div class="current-images" id="galleryImagesList">
+                        <!-- Загрузка изображений -->
+                        <div style="text-align: center; padding: 40px;">
+                            <div class="loading"></div>
+                            <p>Загрузка изображений галереи...</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Информация о галерее -->
+                <div class="form-group">
+                    <label>Информация о галерее:</label>
+                    <div class="info-box" style="background: #f0fff4; padding: 20px; border-radius: 8px; border-left: 4px solid #48bb78;">
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                            <div style="background: white; padding: 15px; border-radius: 6px; text-align: center;">
+                                <div style="font-size: 24px; color: #667eea;" id="galleryCount">0</div>
+                                <div style="font-size: 12px; color: #718096;">Всего изображений</div>
+                            </div>
+                            <div style="background: white; padding: 15px; border-radius: 6px; text-align: center;">
+                                <div style="font-size: 24px; color: #ed8936;" id="gallerySize">0</div>
+                                <div style="font-size: 12px; color: #718096;">Общий размер (MB)</div>
+                            </div>
+                            <div style="background: white; padding: 15px; border-radius: 6px; text-align: center;">
+                                <div style="font-size: 24px; color: #48bb78;">📱</div>
+                                <div style="font-size: 12px; color: #718096;">Автообновление</div>
+                            </div>
+                        </div>
+                        <p style="margin-top: 15px; color: #718096; font-size: 14px;">
+                            <strong>Внимание:</strong> Все изменения в галерее автоматически отображаются на главной странице.<br>
+                            Нет необходимости редактировать код сайта.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
         <!-- Безопасность -->
         <section class="admin-section security-section">
             <div class="section-header">

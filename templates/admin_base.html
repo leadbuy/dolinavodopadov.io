@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/adm.css') }}">
+    <title>Админ-панель - Долина Водопадов</title>
+    <style>
+        .admin-nav {
+            background: #f7fafc;
+            padding: 20px;
+            border-bottom: 1px solid #e2e8f0;
+            margin-bottom: 30px;
+        }
+        
+        .nav-tabs {
+            display: flex;
+            gap: 20px;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .nav-tabs li a {
+            display: block;
+            padding: 10px 20px;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            color: #4a5568;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .nav-tabs li a:hover {
+            background: #edf2f7;
+            border-color: #cbd5e0;
+        }
+        
+        .nav-tabs li.active a {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+        
+        .admin-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* Уведомления */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 500;
+            z-index: 9999;
+            animation: slideIn 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .notification.success {
+            background: #48bb78;
+            border-left: 4px solid #38a169;
+        }
+        
+        .notification.error {
+            background: #f56565;
+            border-left: 4px solid #e53e3e;
+        }
+        
+        .notification.info {
+            background: #4299e1;
+            border-left: 4px solid #3182ce;
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+    <header class="admin-header">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h1><span>Админ-панель</span> | Долина Водопадов</h1>
+            <div class="user-info">
+                <span class="user-name">Администратор</span>
+                <a href="{{ url_for('index') }}" class="back-btn">На сайт</a>
+                <a href="{{ url_for('logout') }}" class="logout-btn">Выйти</a>
+            </div>
+        </div>
+    </header>
+    
+    <nav class="admin-nav">
+        <div class="admin-container">
+            <ul class="nav-tabs">
+                <li class="{{ 'active' if active_tab == 'home' }}">
+                    <a href="{{ url_for('admin_home') }}">Основные настройки</a>
+                </li>
+                <li class="{{ 'active' if active_tab == 'attractions' }}">
+                    <a href="{{ url_for('admin_attractions') }}">Достопримечательности</a>
+                </li>
+                <li class="{{ 'active' if active_tab == 'gallery' }}">
+                    <a href="{{ url_for('admin_gallery') }}">Галерея парка</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    
+    <main class="admin-container">
+        {% block content %}{% endblock %}
+    </main>
+    
+    <script>
+        // Общие функции для всех страниц
+        function showNotification(message, type = 'info') {
+            // Удаляем старые уведомления
+            const oldNotifications = document.querySelectorAll('.notification');
+            oldNotifications.forEach(n => n.remove());
+            
+            // Создаем новое уведомление
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.innerHTML = `
+                ${type === 'success' ? '✓' : type === 'error' ? '✗' : 'ℹ'}
+                ${message}
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Автоматическое удаление через 5 секунд
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                notification.style.transform = 'translateX(100%)';
+                setTimeout(() => notification.remove(), 300);
+            }, 5000);
+        }
+        
+        // Функция для безопасного запроса JSON
+        function safeFetch(url, options = {}) {
+            return fetch(url, {
+                ...options,
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    ...options.headers
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                
+                const contentType = response.headers.get('content-type');
+                if (contentType && contentType.includes('application/json')) {
+                    return response.json();
+                } else {
+                    return response.text().then(text => {
+                        throw new Error('Ответ не в формате JSON');
+                    });
+                }
+            });
+        }
+    </script>
+    
+    {% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,494 @@
+{% extends "admin_base.html" %}
+
+{% block extra_head %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const saveButtons = document.querySelectorAll('.save-btn');
+        const textareas = document.querySelectorAll('textarea');
+        
+        // Счетчики символов
+        textareas.forEach(textarea => {
+            const counter = textarea.parentElement.querySelector('.char-counter');
+            if (counter) {
+                textarea.addEventListener('input', function() {
+                    counter.textContent = `${this.value.length}/1000`;
+                    const saveBtn = this.closest('.admin-section').querySelector('.save-btn');
+                    if (saveBtn) saveBtn.disabled = false;
+                });
+            }
+        });
+        
+        // Обработка сохранения
+        saveButtons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const section = this.dataset.section;
+                const fields = {};
+                
+                const form = this.closest('.admin-section');
+                const inputs = form.querySelectorAll('input, textarea');
+                inputs.forEach(input => {
+                    if (input.name) {
+                        fields[input.name] = input.value;
+                    }
+                });
+                
+                saveContent(section, fields, this);
+            });
+        });
+        
+        // Смена пароля
+        const changePasswordBtn = document.getElementById('changePasswordBtn');
+        if (changePasswordBtn) {
+            changePasswordBtn.addEventListener('click', function() {
+                const currentPassword = document.getElementById('currentPassword').value;
+                const newPassword = document.getElementById('newPassword').value;
+                const confirmPassword = document.getElementById('confirmPassword').value;
+                
+                if (!currentPassword || !newPassword || !confirmPassword) {
+                    showNotification('Заполните все поля', 'error');
+                    return;
+                }
+                
+                if (newPassword !== confirmPassword) {
+                    showNotification('Пароли не совпадают', 'error');
+                    return;
+                }
+                
+                changePassword(currentPassword, newPassword, confirmPassword, this);
+            });
+        }
+    });
+    
+    function saveContent(section, data, button) {
+        const originalText = button.textContent;
+        
+        button.disabled = true;
+        button.innerHTML = '<span class="loading"></span> Сохранение...';
+        
+        fetch('/admin/update', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                section: section,
+                fields: data
+            })
+        })
+        .then(response => response.json())
+        .then(result => {
+            if (result.success) {
+                showNotification('Данные успешно сохранены', 'success');
+                
+                const status = button.parentElement.querySelector('.saved-status');
+                if (status) {
+                    status.classList.add('show');
+                    setTimeout(() => status.classList.remove('show'), 3000);
+                }
+            } else {
+                showNotification('Ошибка: ' + result.message, 'error');
+            }
+        })
+        .catch(error => {
+            showNotification('Ошибка сети: ' + error.message, 'error');
+        })
+        .finally(() => {
+            button.disabled = false;
+            button.textContent = originalText;
+        });
+    }
+    
+    function changePassword(currentPassword, newPassword, confirmPassword, button) {
+        const originalText = button.textContent;
+        
+        button.disabled = true;
+        button.innerHTML = '<span class="loading"></span> Меняем пароль...';
+        
+        fetch('/admin/reset-password', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                current_password: currentPassword,
+                new_password: newPassword,
+                confirm_password: confirmPassword
+            })
+        })
+        .then(response => response.json())
+        .then(result => {
+            if (result.success) {
+                showNotification('Пароль успешно изменен!', 'success');
+                document.getElementById('currentPassword').value = '';
+                document.getElementById('newPassword').value = '';
+                document.getElementById('confirmPassword').value = '';
+            } else {
+                showNotification('Ошибка: ' + result.message, 'error');
+            }
+        })
+        .catch(error => {
+            showNotification('Ошибка сети', 'error');
+        })
+        .finally(() => {
+            button.disabled = false;
+            button.textContent = originalText;
+        });
+    }
+
+    // Функции для работы с изображениями слайдера
+    function handleImageUpload(file) {
+        if (!file) return;
+        
+        if (file.size > 16 * 1024 * 1024) {
+            showNotification('Файл слишком большой. Максимальный размер: 16MB', 'error');
+            return;
+        }
+        
+        const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+        if (!allowedTypes.includes(file.type)) {
+            showNotification('Неподдерживаемый формат файла', 'error');
+            return;
+        }
+        
+        const uploadProgress = document.getElementById('uploadProgress');
+        const uploadBar = document.getElementById('uploadBar');
+        uploadProgress.style.display = 'block';
+        uploadBar.style.width = '0%';
+        
+        const formData = new FormData();
+        formData.append('image', file);
+        
+        fetch('/admin/upload-image', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(result => {
+            if (result.success) {
+                uploadBar.style.width = '100%';
+                showNotification('Изображение успешно загружено!', 'success');
+                
+                setTimeout(() => {
+                    location.reload();
+                }, 1500);
+            } else {
+                showNotification('Ошибка: ' + result.message, 'error');
+                uploadProgress.style.display = 'none';
+            }
+        })
+        .catch(error => {
+            showNotification('Ошибка сети: ' + error.message, 'error');
+            uploadProgress.style.display = 'none';
+        })
+        .finally(() => {
+            document.getElementById('imageUpload').value = '';
+            
+            if (uploadBar.style.width === '100%') {
+                setTimeout(() => {
+                    uploadProgress.style.display = 'none';
+                }, 1000);
+            }
+        });
+        
+        let progress = 0;
+        const interval = setInterval(() => {
+            progress += 5;
+            uploadBar.style.width = progress + '%';
+            if (progress >= 90) clearInterval(interval);
+        }, 100);
+    }
+
+    function deleteImage(filename) {
+        if (!confirm(`Вы уверены, что хотите удалить изображение "${filename}"?`)) {
+            return;
+        }
+        
+        showNotification('Удаление изображения...', 'success');
+        
+        fetch('/admin/delete-image', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                filename: filename
+            })
+        })
+        .then(response => response.json())
+        .then(result => {
+            if (result.success) {
+                showNotification('Изображение успешно удалено!', 'success');
+                
+                setTimeout(() => {
+                    location.reload();
+                }, 1500);
+            } else {
+                showNotification('Ошибка: ' + result.message, 'error');
+            }
+        })
+        .catch(error => {
+            showNotification('Ошибка сети: ' + error.message, 'error');
+        });
+    }
+
+    // Drag and drop для изображений
+    document.addEventListener('DOMContentLoaded', function() {
+        const uploadArea = document.querySelector('.upload-area');
+        const fileInput = document.getElementById('imageUpload');
+        
+        if (uploadArea && fileInput) {
+            uploadArea.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                uploadArea.style.borderColor = '#667eea';
+                uploadArea.style.backgroundColor = '#ebf8ff';
+            });
+            
+            uploadArea.addEventListener('dragleave', function(e) {
+                e.preventDefault();
+                uploadArea.style.borderColor = '#cbd5e0';
+                uploadArea.style.backgroundColor = '#f8fafc';
+            });
+            
+            uploadArea.addEventListener('drop', function(e) {
+                e.preventDefault();
+                uploadArea.style.borderColor = '#cbd5e0';
+                uploadArea.style.backgroundColor = '#f8fafc';
+                
+                if (e.dataTransfer.files.length) {
+                    handleImageUpload(e.dataTransfer.files[0]);
+                }
+            });
+            
+            uploadArea.addEventListener('click', function(e) {
+                if (e.target.tagName !== 'BUTTON') {
+                    fileInput.click();
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}
+
+{% block content %}
+<!-- Раздел главной страницы -->
+<section class="admin-section">
+    <div class="section-header">
+        <h2>Заголовок главной страницы</h2>
+        <div class="save-btn" data-section="hero">
+            Сохранить изменения
+        </div>
+    </div>
+    
+    <div class="form-group">
+        <label for="title">Заголовок сайта</label>
+        <input type="text" id="title" name="title" 
+               value="{{ page_data.hero.title if page_data.hero }}" 
+               placeholder="Введите заголовок сайта">
+    </div>
+    
+    <div class="form-group">
+        <label for="description">Описание под заголовком</label>
+        <textarea id="description" name="description" 
+                  placeholder="Введите описание сайта">{{ page_data.hero.description if page_data.hero }}</textarea>
+        <div class="char-counter">0/1000</div>
+    </div>
+</section>
+
+<!-- Раздел "О нас" -->
+<section class="admin-section">
+    <div class="section-header">
+        <h2>Раздел "О нас"</h2>
+        <div class="save-btn" data-section="about">
+            Сохранить изменения
+        </div>
+    </div>
+    
+    <div class="form-group">
+        <label for="paragraph1">Первый абзац</label>
+        <textarea id="paragraph1" name="paragraph1" 
+                  placeholder="Первый абзац текста">{{ page_data.about.paragraph1 if page_data.about }}</textarea>
+        <div class="char-counter">0/1000</div>
+    </div>
+    
+    <div class="form-group">
+        <label for="paragraph2">Второй абзац</label>
+        <textarea id="paragraph2" name="paragraph2" 
+                  placeholder="Второй абзац текста">{{ page_data.about.paragraph2 if page_data.about }}</textarea>
+        <div class="char-counter">0/1000</div>
+    </div>
+    
+    <div class="form-group">
+        <label for="paragraph3">Третий абзац</label>
+        <textarea id="paragraph3" name="paragraph3" 
+                  placeholder="Третий абзац текста">{{ page_data.about.paragraph3 if page_data.about }}</textarea>
+        <div class="char-counter">0/1000</div>
+    </div>
+</section>
+
+<!-- Статистика -->
+<section class="admin-section">
+    <div class="section-header">
+        <h2>Цифры в разделе "О нас"</h2>
+        <div class="save-btn" data-section="stats">
+            Сохранить изменения
+        </div>
+    </div>
+    
+    <div class="stats-grid">
+        <div class="stat-item">
+            <label for="waterfalls">Количество водопадов</label>
+            <input type="text" id="waterfalls" name="waterfalls" 
+                   value="{{ page_data.stats.waterfalls if page_data.stats }}">
+        </div>
+        
+        <div class="stat-item">
+            <label for="territory">Площадь территории</label>
+            <input type="text" id="territory" name="territory" 
+                   value="{{ page_data.stats.territory if page_data.stats }}">
+        </div>
+        
+        <div class="stat-item">
+            <label for="zones">Количество тематических зон</label>
+            <input type="text" id="zones" name="zones" 
+                   value="{{ page_data.stats.zones if page_data.stats }}">
+        </div>
+    </div>
+</section>
+
+<!-- Раздел управления изображениями слайдера -->
+<section class="admin-section">
+    <div class="section-header">
+        <h2>Управление изображениями слайдера</h2>
+        <div class="saved-status" style="display: flex; align-items: center; gap: 5px;">
+            <span style="color: #48bb78;">✓</span>
+            <span>Изображения загружены автоматически</span>
+        </div>
+    </div>
+    
+    <div class="image-management">
+        <div class="form-group">
+            <label>Загрузить новое изображение:</label>
+            <div class="upload-area" style="border: 2px dashed #cbd5e0; border-radius: 8px; padding: 30px; text-align: center; background: #f8fafc; margin-bottom: 20px;">
+                
+                <p style="color: #4a5568; margin-bottom: 15px;">
+                    Перетащите изображение сюда или нажмите для выбора
+                </p>
+                <input type="file" id="imageUpload" accept=".jpg,.jpeg,.png,.gif,.webp" 
+                    style="display: none;" onchange="handleImageUpload(this.files[0])">
+                <button onclick="document.getElementById('imageUpload').click()" 
+                        class="save-btn" style="background: #4299e1; margin: 0 auto;">
+                    Выбрать файл
+                </button>
+                <div id="uploadProgress" style="display: none; margin-top: 15px;">
+                    <div style="display: flex; align-items: center; gap: 10px; justify-content: center;">
+                        <div class="loading"></div>
+                        <span>Загрузка...</span>
+                    </div>
+                    <div style="width: 100%; height: 4px; background: #e2e8f0; border-radius: 2px; margin-top: 10px;">
+                        <div id="uploadBar" style="width: 0%; height: 100%; background: #48bb78; border-radius: 2px; transition: width 0.3s;"></div>
+                    </div>
+                </div>
+                <p style="font-size: 12px; color: #718096; margin-top: 15px;">
+                    Поддерживаемые форматы: JPG, JPEG, PNG, GIF, WEBP<br>
+                    Максимальный размер: 16MB
+                </p>
+            </div>
+        </div>
+        
+        <!-- Список изображений -->
+        <div class="form-group">
+            <label>Текущие изображения в слайдере ({{ images_info|length }}):</label>
+            <div class="current-images">
+                {% if images_info %}
+                    <div style="background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; max-height: 400px; overflow-y: auto;">
+                        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px;">
+                            {% for image in images_info %}
+                            <div class="image-card" style="background: white; border-radius: 8px; overflow: hidden; border: 1px solid #e2e8f0;">
+                                <!-- ИЗМЕНЕНИЕ ЗДЕСЬ: заменяем градиентный div на img -->
+                                <div style="height: 120px; position: relative; background: #f7fafc; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+                                    <img src="{{ url_for('static', filename=image.path) }}" 
+                                        alt="{{ image.filename }}"
+                                        style="width: 100%; height: 100%; object-fit: cover;"
+                                        onerror="this.style.display='none'; this.parentElement.innerHTML='<div style=\'color:#718096; text-align:center; padding:20px\'>Ошибка загрузки</div>'">
+                                    {% if loop.first %}
+                                    <div style="position: absolute; top: 10px; right: 10px; background: #48bb78; color: white; padding: 2px 6px; border-radius: 4px; font-size: 10px;">
+                                        Активно
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                <div style="padding: 10px;">
+                                    <div style="font-weight: 600; color: #2d3748; margin-bottom: 5px; font-size: 13px;">
+                                        {{ image.filename }}
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between; font-size: 11px; color: #718096; margin-bottom: 10px;">
+                                        <span>{{ (image.size / 1024)|round(1) }} KB</span>
+                                        <span>№ {{ loop.index }}</span>
+                                    </div>
+                                    <div style="display: flex; gap: 8px;">
+                                        <button onclick="deleteImage('{{ image.filename }}')" 
+                                                class="delete-btn" 
+                                                style="flex: 1; background: #fed7d7; color: #c53030; border: none; padding: 6px; border-radius: 4px; cursor: pointer; font-size: 12px;">
+                                            Удалить
+                                        </button>
+                                        <button onclick="alert('Для изменения порядка переименуйте файлы в папке static/images/hero-section/')" 
+                                                class="set-first-btn" 
+                                                style="flex: 1; background: #e6fffa; color: #234e52; border: none; padding: 6px; border-radius: 4px; cursor: pointer; font-size: 12px;"
+                                                {% if loop.first %}disabled style="opacity: 0.5; cursor: not-allowed;"{% endif %}>
+                                            {% if loop.first %}Первый{% else %}Сделать первым{% endif %}
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <p style="margin-top: 10px; color: #48bb78; font-size: 14px;">
+                        ✓ Найдено {{ images_info|length }} изображений
+                    </p>
+                {% else %}
+                    <div style="background: #fed7d7; padding: 30px; border-radius: 8px; text-align: center; border: 1px solid #fc8181;">
+                        <i style="font-size: 48px; color: #c53030; margin-bottom: 15px; display: block;">📷</i>
+                        <p style="color: #c53030; margin: 0; font-size: 16px;">
+                            ⚠️ Изображения не найдены!
+                        </p>
+                        <p style="color: #c53030; margin-top: 10px; font-size: 14px;">
+                            Загрузите первое изображение с помощью формы выше
+                        </p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Безопасность -->
+<section class="admin-section security-section">
+    <div class="section-header">
+        <h2><i>🔒</i> Безопасность</h2>
+    </div>
+    
+    <div class="password-form">
+        <div class="form-group">
+            <label for="currentPassword">Текущий пароль</label>
+            <input type="password" id="currentPassword" 
+                   placeholder="Введите текущий пароль">
+        </div>
+        
+        <div class="form-group">
+            <label for="newPassword">Новый пароль</label>
+            <input type="password" id="newPassword" 
+                   placeholder="Введите новый пароль">
+        </div>
+        
+        <div class="form-group">
+            <label for="confirmPassword">Подтвердите новый пароль</label>
+            <input type="password" id="confirmPassword" 
+                   placeholder="Подтвердите новый пароль">
+        </div>
+        
+        <button id="changePasswordBtn" class="save-btn">
+            Сменить пароль
+        </button>
+    </div>
+</section>
+{% endblock %}

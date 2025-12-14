@@ -1,0 +1,315 @@
+{% extends "admin_base.html" %}
+
+{% block extra_head %}
+<script>
+    const MAX_FILE_SIZE = 16 * 1024 * 1024;
+
+    // Загрузка изображений галереи
+    function loadGalleryImages() {
+        fetch('/admin/gallery/data')  // Изменено с /admin/gallery на /admin/gallery/data
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    renderGalleryImages(data.images);
+                } else {
+                    showNotification('Ошибка загрузки галереи: ' + data.message, 'error');
+                }
+            })
+            .catch(error => {
+                showNotification('Ошибка сети при загрузке галереи: ' + error.message, 'error');
+            });
+    }
+
+    // Отображение изображений галереи
+    function renderGalleryImages(images) {
+        const container = document.getElementById('galleryImagesList');
+        
+        if (!images || images.length === 0) {
+            container.innerHTML = `
+                <div style="background: #fed7d7; padding: 30px; border-radius: 8px; text-align: center; border: 1px solid #fc8181;">
+                    <i style="font-size: 48px; color: #c53030; margin-bottom: 15px; display: block;">📷</i>
+                    <p style="color: #c53030; margin: 0; font-size: 16px;">
+                        ⚠️ В галерее нет изображений!
+                    </p>
+                    <p style="color: #c53030; margin-top: 10px; font-size: 14px;">
+                        Загрузите первое изображение с помощью формы выше
+                    </p>
+                </div>
+            `;
+            
+            document.getElementById('galleryCount').textContent = '0';
+            document.getElementById('gallerySize').textContent = '0';
+            return;
+        }
+        
+        // Безопасно вычисляем общий размер
+        const totalSizeMB = (images.reduce((sum, img) => sum + (img.size || 0), 0) / (1024*1024)).toFixed(2);
+        document.getElementById('galleryCount').textContent = images.length;
+        document.getElementById('gallerySize').textContent = totalSizeMB;
+        
+        let html = `
+            <div style="background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; max-height: 400px; overflow-y: auto;">
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px;">
+        `;
+        
+        images.forEach((image, index) => {
+            const sizeKB = ((image.size || 0) / 1024).toFixed(1);
+            const filename = image.filename || 'unknown.jpg';
+            const displayName = filename.substring(0, 15) + (filename.length > 15 ? '...' : '');
+            
+            // Формируем путь к изображению
+            // ВАЖНО: используем переменную GALLERY_FOLDER из app.py
+            const imageUrl = `/static/images/gallery-section/${filename}`;
+            
+            html += `
+                <div class="image-card" style="background: white; border-radius: 8px; overflow: hidden; border: 1px solid #e2e8f0; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                    <div style="height: 120px; background: #f7fafc; position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+                        <img src="${imageUrl}" 
+                            alt="${filename}"
+                            style="width: 100%; height: 100%; object-fit: cover;"
+                            onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"100\" height=\"100\" viewBox=\"0 0 100 100\"><rect width=\"100\" height=\"100\" fill=\"%23f7fafc\"/><text x=\"50\" y=\"50\" font-family=\"Arial\" font-size=\"14\" fill=\"%234a5568\" text-anchor=\"middle\" alignment-baseline=\"middle\">
+                    </div>
+                    <div style="padding: 10px;">
+                        <div style="font-weight: 600; color: #2d3748; margin-bottom: 5px; font-size: 13px; word-break: break-all;">
+                            ${displayName}
+                        </div>
+                        <div style="display: flex; justify-content: space-between; font-size: 11px; color: #718096; margin-bottom: 10px;">
+                            <span>${sizeKB} KB</span>
+                            <span>№ ${index + 1}</span>
+                        </div>
+                        <button onclick="deleteGalleryImage('${filename}')" 
+                                class="delete-btn" 
+                                style="width: 100%; background: #fed7d7; color: #c53030; border: none; padding: 8px; border-radius: 4px; cursor: pointer; font-size: 12px; transition: background 0.3s;"
+                                onmouseover="this.style.backgroundColor='#fc8181';"
+                                onmouseout="this.style.backgroundColor='#fed7d7';">
+                            Удалить из галереи
+                        </button>
+                    </div>
+                </div>
+            `;
+        });
+        
+        html += `
+                </div>
+            </div>
+            <p style="margin-top: 10px; color: #48bb78; font-size: 14px;">
+                ✓ Найдено ${images.length} изображений в галерее
+            </p>
+        `;
+        
+        container.innerHTML = html;
+    }
+
+    // Загрузка изображения в галерею
+    function handleGalleryImageUpload(file) {
+        if (!file) return;
+        
+        if (file.size > MAX_FILE_SIZE) {
+            showNotification('Файл слишком большой. Максимальный размер: 16MB', 'error');
+            return;
+        }
+        
+        const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+        if (!allowedTypes.includes(file.type)) {
+            showNotification('Неподдерживаемый формат файла', 'error');
+            return;
+        }
+        
+        const uploadProgress = document.getElementById('galleryUploadProgress');
+        const uploadBar = document.getElementById('galleryUploadBar');
+        uploadProgress.style.display = 'block';
+        uploadBar.style.width = '0%';
+        
+        const formData = new FormData();
+        formData.append('image', file);
+        
+        fetch('/admin/gallery/upload', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(result => {
+            if (result.success) {
+                uploadBar.style.width = '100%';
+                showNotification('Изображение успешно загружено в галерею!', 'success');
+                
+                setTimeout(() => {
+                    loadGalleryImages();
+                }, 1500);
+            } else {
+                showNotification('Ошибка: ' + result.message, 'error');
+                uploadProgress.style.display = 'none';
+            }
+        })
+        .catch(error => {
+            showNotification('Ошибка сети: ' + error.message, 'error');
+            uploadProgress.style.display = 'none';
+        })
+        .finally(() => {
+            document.getElementById('galleryImageUpload').value = '';
+            
+            if (uploadBar.style.width === '100%') {
+                setTimeout(() => {
+                    uploadProgress.style.display = 'none';
+                }, 1000);
+            }
+        });
+        
+        let progress = 0;
+        const interval = setInterval(() => {
+            progress += 5;
+            uploadBar.style.width = progress + '%';
+            if (progress >= 90) clearInterval(interval);
+        }, 100);
+    }
+
+    // Удаление изображения из галереи
+    function deleteGalleryImage(filename) {
+        if (!confirm(`Вы уверены, что хотите удалить изображение "${filename}" из галереи?`)) {
+            return;
+        }
+        
+        showNotification('Удаление изображения из галереи...', 'success');
+        
+        fetch('/admin/gallery/delete', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                filename: filename
+            })
+        })
+        .then(response => response.json())
+        .then(result => {
+            if (result.success) {
+                showNotification('Изображение успешно удалено из галереи!', 'success');
+                
+                setTimeout(() => {
+                    loadGalleryImages();
+                }, 1500);
+            } else {
+                showNotification('Ошибка: ' + result.message, 'error');
+            }
+        })
+        .catch(error => {
+            showNotification('Ошибка сети: ' + error.message, 'error');
+        });
+    }
+
+    // Инициализация при загрузке страницы
+    document.addEventListener('DOMContentLoaded', function() {
+        loadGalleryImages();
+        
+        // Drag and drop для галереи
+        const galleryUploadArea = document.querySelector('.upload-area');
+        const galleryFileInput = document.getElementById('galleryImageUpload');
+        
+        if (galleryUploadArea && galleryFileInput) {
+            galleryUploadArea.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                galleryUploadArea.style.borderColor = '#667eea';
+                galleryUploadArea.style.backgroundColor = '#ebf8ff';
+            });
+            
+            galleryUploadArea.addEventListener('dragleave', function(e) {
+                e.preventDefault();
+                galleryUploadArea.style.borderColor = '#cbd5e0';
+                galleryUploadArea.style.backgroundColor = '#f8fafc';
+            });
+            
+            galleryUploadArea.addEventListener('drop', function(e) {
+                e.preventDefault();
+                galleryUploadArea.style.borderColor = '#cbd5e0';
+                galleryUploadArea.style.backgroundColor = '#f8fafc';
+                
+                if (e.dataTransfer.files.length) {
+                    handleGalleryImageUpload(e.dataTransfer.files[0]);
+                }
+            });
+            
+            galleryUploadArea.addEventListener('click', function(e) {
+                if (e.target.tagName !== 'BUTTON') {
+                    galleryFileInput.click();
+                }
+            });
+        }
+    });
+
+    // Глобальная функция для использования в onchange
+    window.handleGalleryImageUpload = handleGalleryImageUpload;
+</script>
+{% endblock %}
+
+{% block content %}
+<!-- Управление галереей парка -->
+<section class="admin-section">
+    <div class="section-header">
+        <h2>Управление галереей парка</h2>
+        <div class="saved-status" style="display: flex; align-items: center; gap: 5px;">
+            <span style="color: #48bb78;">✓</span>
+            <span>Изображения загружаются автоматически</span>
+        </div>
+    </div>
+    
+    <div class="image-management">
+        <div class="form-group">
+            <label>Загрузить новое изображение в галерею:</label>
+            <div class="upload-area" style="border: 2px dashed #cbd5e0; border-radius: 8px; padding: 30px; text-align: center; background: #f8fafc; margin-bottom: 20px;">
+                
+                <p style="color: #4a5568; margin-bottom: 15px;">
+                    Перетащите изображение сюда или нажмите для выбора
+                </p>
+                <input type="file" id="galleryImageUpload" accept=".jpg,.jpeg,.png,.gif,.webp" 
+                    style="display: none;" onchange="handleGalleryImageUpload(this.files[0])">
+                <button onclick="document.getElementById('galleryImageUpload').click()" 
+                        class="save-btn" style="background: #4299e1; margin: 0 auto;">
+                    Выбрать файл
+                </button>
+                <div id="galleryUploadProgress" style="display: none; margin-top: 15px;">
+                    <div style="display: flex; align-items: center; gap: 10px; justify-content: center;">
+                        <div class="loading"></div>
+                        <span>Загрузка...</span>
+                    </div>
+                    <div style="width: 100%; height: 4px; background: #e2e8f0; border-radius: 2px; margin-top: 10px;">
+                        <div id="galleryUploadBar" style="width: 0%; height: 100%; background: #48bb78; border-radius: 2px; transition: width 0.3s;"></div>
+                    </div>
+                </div>
+                <p style="font-size: 12px; color: #718096; margin-top: 15px;">
+                    Поддерживаемые форматы: JPG, JPEG, PNG, GIF, WEBP<br>
+                    Максимальный размер: 16MB<br>
+                    <strong>Изображения автоматически появятся на сайте в разделе "Галерея парка"</strong>
+                </p>
+            </div>
+        </div>
+        
+        <!-- Список изображений галереи -->
+        <div class="form-group">
+            <label>Текущие изображения в галерее:</label>
+            <div class="current-images" id="galleryImagesList">
+                <div style="text-align: center; padding: 40px;">
+                    <div class="loading"></div>
+                    <p>Загрузка изображений галереи...</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Информация о галерее -->
+        <div class="form-group">
+            <label>Информация о галерее:</label>
+            <div class="info-box" style="background: #f0fff4; padding: 20px; border-radius: 8px; border-left: 4px solid #48bb78;">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                    <div style="background: white; padding: 15px; border-radius: 6px; text-align: center;">
+                        <div style="font-size: 24px; color: #667eea;" id="galleryCount">0</div>
+                        <div style="font-size: 12px; color: #718096;">Всего изображений</div>
+                    </div>
+                    <div style="background: white; padding: 15px; border-radius: 6px; text-align: center;">
+                        <div style="font-size: 24px; color: #ed8936;" id="gallerySize">0</div>
+                        <div style="font-size: 12px; color: #718096;">Общий размер (MB)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
