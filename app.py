@@ -34,9 +34,11 @@ def login_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
 # Путь к файлу с данными страницы
-DATA_FILE = 'page_data.json'
-ATTRACTIONS_FILE = 'attractions_data.json'
+DATA_FILE = os.path.join(BASE_DIR, 'page_data.json')
+ATTRACTIONS_FILE = os.path.join(BASE_DIR, 'attractions_data.json')
 
 def load_page_data():
     """Загрузка данных страницы из файла"""
@@ -69,19 +71,37 @@ def load_attractions():
 def save_attractions(attractions):
     """Сохранение данных достопримечательностей"""
     try:
+        print(f"Сохранение {len(attractions)} достопримечательностей в {ATTRACTIONS_FILE}")
         with open(ATTRACTIONS_FILE, 'w', encoding='utf-8') as f:
             json.dump(attractions, f, ensure_ascii=False, indent=2)
+        
+        # Проверяем, что файл был сохранен
+        if os.path.exists(ATTRACTIONS_FILE):
+            file_size = os.path.getsize(ATTRACTIONS_FILE)
+            print(f"Файл успешно сохранен. Размер: {file_size} байт")
+        else:
+            print("ОШИБКА: Файл не был создан!")
+            
         return True
     except Exception as e:
         print(f"Ошибка при сохранении достопримечательностей: {e}")
         return False
 
-def get_next_attraction_id():
-    """Получение следующего ID для новой достопримечательности"""
-    attractions = load_attractions()
-    if not attractions:
-        return 1
-    return max(attraction['id'] for attraction in attractions) + 1
+def load_attractions():
+    """Загрузка данных достопримечательностей"""
+    try:
+        print(f"Загрузка достопримечательностей из {ATTRACTIONS_FILE}")
+        if not os.path.exists(ATTRACTIONS_FILE):
+            print(f"Файл {ATTRACTIONS_FILE} не существует. Создаем пустой список.")
+            return []
+            
+        with open(ATTRACTIONS_FILE, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+            print(f"Загружено {len(data)} достопримечательностей")
+            return data
+    except Exception as e:
+        print(f"Ошибка при загрузке достопримечательностей: {e}")
+        return []
 
 def get_attraction_images(folder):
     """Получение списка изображений для достопримечательности"""
@@ -251,6 +271,10 @@ def update_content():
         
         if not fields:
             return jsonify({'success': False, 'message': 'Не указаны поля для обновления (fields)'})
+        
+        # Игнорируем запросы к удаленному разделу stats
+        if section == 'stats':
+            return jsonify({'success': False, 'message': 'Раздел статистики удален'})
         
         if section not in page_data:
             page_data[section] = {}
@@ -571,10 +595,12 @@ def upload_attraction_image(attraction_id):
         # Получаем информацию о достопримечательности
         attractions = load_attractions()
         folder_name = None
+        attraction_index = -1
         
-        for attraction in attractions:
+        for i, attraction in enumerate(attractions):
             if attraction['id'] == attraction_id:
                 folder_name = attraction.get('folder', '')
+                attraction_index = i
                 break
         
         if not folder_name:
@@ -593,14 +619,22 @@ def upload_attraction_image(attraction_id):
         file.save(file_path)
         
         # Обновляем список изображений в данных
-        for i, attraction in enumerate(attractions):
-            if attraction['id'] == attraction_id:
-                if 'images' not in attractions[i]:
-                    attractions[i]['images'] = []
-                attractions[i]['images'].append(unique_filename)
-                break
-        
-        save_attractions(attractions)
+        if attraction_index != -1:
+            if 'images' not in attractions[attraction_index]:
+                attractions[attraction_index]['images'] = []
+            
+            # Добавляем только если такого файла еще нет
+            if unique_filename not in attractions[attraction_index]['images']:
+                attractions[attraction_index]['images'].append(unique_filename)
+                
+                # Сохраняем изменения
+                if save_attractions(attractions):
+                    print(f"Добавлено изображение {unique_filename} для достопримечательности {attraction_id}")
+                    print(f"Теперь изображения: {attractions[attraction_index]['images']}")
+                else:
+                    return jsonify({'success': False, 'message': 'Ошибка при сохранении данных'})
+            else:
+                print(f"Изображение {unique_filename} уже существует в списке")
         
         return jsonify({
             'success': True, 
@@ -609,6 +643,7 @@ def upload_attraction_image(attraction_id):
         })
         
     except Exception as e:
+        print(f"Ошибка при загрузке изображения: {e}")
         return jsonify({'success': False, 'message': f'Ошибка: {str(e)}'})
 
 @app.route('/admin/attractions/<int:attraction_id>/images/<filename>', methods=['DELETE'])

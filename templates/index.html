@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ page_data.hero.title if page_data.hero else 'Путешествие в Карелию: Парк природы «Долина Водопадов»' }}</title>
+    <title>{{ page_data.hero.title}}</title>
     <meta name="description" content="{{ page_data.hero.description if page_data.hero else 'Путешествие в Карелию: Парк природы «Долина Водопадов»' }}">
     
     <!-- Предзагрузка критичных ресурсов -->
@@ -108,7 +108,7 @@
 
         <div class="hero-content">
             <h1 class="hero-title">
-                {{ page_data.hero.title if page_data.hero else 'Путешествие в Карелию: <br>Парк природы «Долина Водопадов»' }}
+                {{ page_data.hero.title}}
             </h1>
             
             <!-- Кнопки в нижней части -->
@@ -140,19 +140,80 @@
                     <p>{{ page_data.about.paragraph2 if page_data.about else 'На территории парка площадью более 50 гектаров расположены каскады водопадов, древние леса, оленья ферма и реконструкции традиционных поселений.' }}</p>
                     <p>{{ page_data.about.paragraph3 if page_data.about else 'Мы создаем пространство для гармоничного отдыха, где каждый может прикоснуться к природе и истории этого удивительного края.' }}</p>
                 </div>
-                <!-- Перемещаем блок статистики ПОСЛЕ текста -->
-                <div class="about-stats">
-                    <div class="stat-item">
-                        <span class="stat-number">{{ page_data.stats.waterfalls if page_data.stats else '7' }}</span>
-                        <span class="stat-label">водопадов</span>
+            </div>
+            <!-- Новый блок с иконками активностей -->
+            <div class="activities-section">
+                <h3 class="activities-title">Чем можно заняться в парке</h3>
+                <div class="activities-grid">
+                    <div class="activity-item">
+                        <img src="{{ url_for('static', filename='images/icons/tropa.png') }}" 
+                            alt="Тропа" 
+                            class="activity-icon"
+                            loading="lazy">
+                        <span class="activity-label">Эко-тропа</span>
                     </div>
-                    <div class="stat-item">
-                        <span class="stat-number">{{ page_data.stats.territory if page_data.stats else '50+' }}</span>
-                        <span class="stat-label">гектаров территории</span>
+                    <div class="activity-item">
+                        <img src="{{ url_for('static', filename='images/icons/vodopady.png') }}" 
+                            alt="Водопады" 
+                            class="activity-icon"
+                            loading="lazy">
+                        <span class="activity-label">Водопады</span>
                     </div>
-                    <div class="stat-item">
-                        <span class="stat-number">{{ page_data.stats.zones if page_data.stats else '5' }}</span>
-                        <span class="stat-label">тематических зон</span>
+                    <div class="activity-item">
+                        <img src="{{ url_for('static', filename='images/icons/mosty.png') }}" 
+                            alt="Подвесные мосты" 
+                            class="activity-icon"
+                            loading="lazy">
+                        <span class="activity-label">Подвесные мосты</span>
+                    </div>
+                    <div class="activity-item">
+                        <img src="{{ url_for('static', filename='images/icons/kormlenie.png') }}" 
+                            alt="Кормление с рук оленей и лосей" 
+                            class="activity-icon"
+                            loading="lazy">
+                        <span class="activity-label">Кормление с рук оленей и лосей</span>
+                    </div>
+                    <div class="activity-item">
+                        <img src="{{ url_for('static', filename='images/icons/obshchenie.png') }}" 
+                            alt="Общение с хаски и лошадьми" 
+                            class="activity-icon"
+                            loading="lazy">
+                        <span class="activity-label">Общение с хаски и лошадьми</span>
+                    </div>
+                    <div class="activity-item">
+                        <img src="{{ url_for('static', filename='images/icons/kuznica.png') }}" 
+                            alt="Кузница" 
+                            class="activity-icon"
+                            loading="lazy">
+                        <span class="activity-label">Кузница</span>
+                    </div>
+                    <div class="activity-item">
+                        <img src="{{ url_for('static', filename='images/icons/museum.png') }}" 
+                            alt="Музей" 
+                            class="activity-icon"
+                            loading="lazy">
+                        <span class="activity-label">Музей</span>
+                    </div>
+                    <div class="activity-item">
+                        <img src="{{ url_for('static', filename='images/icons/cafe.png') }}" 
+                            alt="Кафе" 
+                            class="activity-icon"
+                            loading="lazy">
+                        <span class="activity-label">Кафе</span>
+                    </div>
+                    <div class="activity-item">
+                        <img src="{{ url_for('static', filename='images/icons/verevochnyi-park.png') }}" 
+                            alt="Веревочный парк" 
+                            class="activity-icon"
+                            loading="lazy">
+                        <span class="activity-label">Веревочный парк</span>
+                    </div>
+                    <div class="activity-item">
+                        <img src="{{ url_for('static', filename='images/icons/tea.png') }}" 
+                            alt="Чай Иван-чай на костре" 
+                            class="activity-icon"
+                            loading="lazy">
+                        <span class="activity-label">Чай Иван-чай на костре</span>
                     </div>
                 </div>
             </div>
@@ -229,7 +290,7 @@
                 <!-- Правая часть - слайдер с фотографиями -->
                 <div class="reviews-slider">
                     <div class="slider-header">
-                        <h2 class="slider-title">Наши гости делятся впечатлениями</h2>
+                        <h2 class="slider-title">Ваши отзывы</h2>
                     </div>
                     
                     <div class="reviews-gallery-container">
@@ -327,7 +388,6 @@
             <div class="prices-container">
                 <div class="prices-header">
                     <h2 class="prices-title">Актуальные цены на 2025 год</h2>
-                    <p class="prices-subtitle">Уважаемые гости!</p>
                 </div>
 
                 <div class="prices-grid">
