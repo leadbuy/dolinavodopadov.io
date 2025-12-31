@@ -544,6 +544,35 @@ s
     transform: translateY(-0.0625rem);
 }
 
+
+.attraction-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.vk-button {
+    background: #4a76a8;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: background 0.3s;
+    font-family: inherit;
+    font-size: 14px;
+}
+
+.vk-button:hover {
+    background: #3a5a80;
+    color: white;
+}
+
 /* Блок "О нас" */
 /* Блок "О нас" - обновленные стили */
 .about-section {
@@ -752,14 +781,14 @@ s
     backdrop-filter: blur(0.625rem);
     align-items: center;
     justify-content: center;
-    padding: 20px;
+    padding: 30px;
 }
 
 .modal-content {
     background-color: var(--white);
     padding: 3rem 2.5rem 2.5rem;
     border-radius: 1.25rem;
-    width: 90%;
+    width: 100%;
     max-width: 31.25rem;
     position: relative;
     box-shadow: 0 1.25rem 3.75rem rgba(0, 0, 0, 0.3);
@@ -769,7 +798,7 @@ s
 }
 
 .text-modal-content {
-    max-width: 50rem;
+    max-width: 100%;
     padding: 3rem 2.5rem 2.5rem;
 }
 
@@ -1704,7 +1733,7 @@ s
 
 .footer-description p {
     
-    font-size: 1.2rem;
+    font-size: 1rem;
     line-height: 1.6;
     color: #ffffff;
     margin: 0;
@@ -1718,7 +1747,7 @@ s
 }
 
 .footer-title {
-    font-size: 1.4rem;
+    font-size: 1.2rem;
     font-weight: 700;
     color: white;
     margin-bottom: 15px;
@@ -1748,7 +1777,7 @@ s
     color: #ffffff;
     text-decoration: none;
     
-    font-size: 1.2rem;
+    font-size: 1rem;
     transition: all 0.3s ease;
     display: inline-block;
     position: relative;
@@ -1846,7 +1875,7 @@ s
     color: #ffffff;
     text-decoration: none;
     
-    font-size: 1.2rem;
+    font-size: 1rem;
     line-height: 1.5;
     transition: color 0.3s ease;
 }
@@ -1869,7 +1898,7 @@ s
 
 .hours-info p {
     
-    font-size: 1.2rem;
+    font-size: 1rem;
     color: #ffffff;
     margin: 5px 0;
     line-height: 1.4;
@@ -1893,7 +1922,7 @@ s
 .copyright p {
     margin: 0;
     
-    font-size: 1rem;
+    font-size: 0.8rem;
     color: #ffffff;
 }
 
@@ -1906,7 +1935,7 @@ s
     color: #ffffff;
     text-decoration: none;
     
-    font-size: 1rem;
+    font-size: 0.8rem;
     transition: color 0.3s ease;
 }
 

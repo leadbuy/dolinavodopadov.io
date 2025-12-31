@@ -280,17 +280,16 @@
     </div>
     
     <div class="form-group">
-        <label for="title">Заголовок сайта</label>
+        <label for="title">Заголовок сайта (seo title)</label>
         <input type="text" id="title" name="title" 
                value="{{ page_data.hero.title if page_data.hero }}" 
                placeholder="Введите заголовок сайта">
     </div>
     
     <div class="form-group">
-        <label for="description">Описание под заголовком</label>
+        <label for="description">seo description</label>
         <textarea id="description" name="description" 
                   placeholder="Введите описание сайта">{{ page_data.hero.description if page_data.hero }}</textarea>
-        <div class="char-counter">0/1000</div>
     </div>
 </section>
 
@@ -307,20 +306,6 @@
         <label for="paragraph1">Первый абзац</label>
         <textarea id="paragraph1" name="paragraph1" 
                   placeholder="Первый абзац текста">{{ page_data.about.paragraph1 if page_data.about }}</textarea>
-        <div class="char-counter">0/1000</div>
-    </div>
-    
-    <div class="form-group">
-        <label for="paragraph2">Второй абзац</label>
-        <textarea id="paragraph2" name="paragraph2" 
-                  placeholder="Второй абзац текста">{{ page_data.about.paragraph2 if page_data.about }}</textarea>
-        <div class="char-counter">0/1000</div>
-    </div>
-    
-    <div class="form-group">
-        <label for="paragraph3">Третий абзац</label>
-        <textarea id="paragraph3" name="paragraph3" 
-                  placeholder="Третий абзац текста">{{ page_data.about.paragraph3 if page_data.about }}</textarea>
         <div class="char-counter">0/1000</div>
     </div>
 </section>

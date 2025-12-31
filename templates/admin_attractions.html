@@ -7,26 +7,83 @@
     let currentAttractionImages = [];
     const MAX_FILE_SIZE = 16 * 1024 * 1024;
 
+    // Функция для показа уведомлений
+    function showNotification(message, type = 'info') {
+        // Создаем элемент уведомления
+        const notification = document.createElement('div');
+        notification.className = `notification notification-${type}`;
+        notification.innerHTML = `
+            <span>${type === 'success' ? '✓' : '✗'} ${message}</span>
+            <button onclick="this.parentElement.remove()">×</button>
+        `;
+        
+        // Стили для уведомления
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 20px;
+            border-radius: 6px;
+            color: white;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            min-width: 300px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            animation: slideIn 0.3s ease-out;
+        `;
+        
+        if (type === 'success') {
+            notification.style.backgroundColor = '#38a169'; // зеленый
+        } else if (type === 'error') {
+            notification.style.backgroundColor = '#e53e3e'; // красный
+        } else {
+            notification.style.backgroundColor = '#4299e1'; // синий
+        }
+        
+        // Добавляем анимацию
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+        `;
+        document.head.appendChild(style);
+        
+        // Добавляем уведомление на страницу
+        document.body.appendChild(notification);
+        
+        // Автоматически удаляем через 5 секунд
+        setTimeout(() => {
+            if (notification.parentElement) {
+                notification.remove();
+            }
+        }, 5000);
+    }
+
+    // Закрыть модальное окно достопримечательности
+    function closeAttractionModal() {
+        document.getElementById('attractionModal').style.display = 'none';
+    }
+
     // Загрузка списка достопримечательностей
     function loadAttractions() {
         console.log('Загрузка достопримечательностей...');
         
-        fetch('/admin/attractions', {
+        fetch('/admin/attractions?format=json', {
             headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
+                'Accept': 'application/json'
             }
         })
         .then(response => {
             console.log('Статус ответа:', response.status);
-            console.log('Заголовки:', response.headers);
             
-            // Проверяем, является ли ответ JSON
             const contentType = response.headers.get('content-type');
             if (contentType && contentType.includes('application/json')) {
                 return response.json();
             } else {
-                // Если не JSON, пытаемся получить текст для отладки
                 return response.text().then(text => {
                     console.error('Ответ не в формате JSON:', text.substring(0, 200));
                     throw new Error('Сервер вернул не JSON: ' + response.status);
@@ -45,7 +102,6 @@
             console.error('Ошибка загрузки достопримечательностей:', error);
             showNotification('Ошибка сети: ' + error.message, 'error');
             
-            // Показываем более подробную информацию об ошибке
             const container = document.getElementById('attractionsList');
             if (container) {
                 container.innerHTML = `
@@ -245,12 +301,15 @@
         document.getElementById('attractionOrder').value = '';
         document.querySelector('input[name="layout"][value="text_left"]').checked = true;
         
+        // Скрываем VK поля при создании нового блока
+        document.getElementById('vkButtonFields').style.display = 'none';
+        
         document.getElementById('attractionModal').style.display = 'block';
     }
 
     // Показать модальное окно для редактирования
     function editAttraction(id) {
-        fetch('/admin/attractions?format=json', {  // Добавлен параметр format=json
+        fetch('/admin/attractions?format=json', {
             headers: {
                 'Accept': 'application/json'
             }
@@ -270,6 +329,25 @@
                     const layout = attraction.layout || 'text_left';
                     document.querySelector(`input[name="layout"][value="${layout}"]`).checked = true;
                     
+                    // Показываем/скрываем VK поля только для блока с id=5
+                    const vkFields = document.getElementById('vkButtonFields');
+                    if (id === 5) {
+                        vkFields.style.display = 'block';
+                        // Заполняем VK поля
+                        if (attraction.vk_button) {
+                            document.getElementById('vkButtonShow').checked = attraction.vk_button.show || false;
+                            document.getElementById('vkButtonText').value = attraction.vk_button.text || 'Группа VK';
+                            document.getElementById('vkButtonLink').value = attraction.vk_button.link || '';
+                        } else {
+                            // Значения по умолчанию
+                            document.getElementById('vkButtonShow').checked = false;
+                            document.getElementById('vkButtonText').value = 'Группа VK';
+                            document.getElementById('vkButtonLink').value = '';
+                        }
+                    } else {
+                        vkFields.style.display = 'none';
+                    }
+                    
                     document.getElementById('attractionModal').style.display = 'block';
                 }
             }
@@ -278,11 +356,6 @@
             console.error('Ошибка загрузки данных:', error);
             showNotification('Ошибка загрузки данных', 'error');
         });
-    }
-
-    // Закрыть модальное окно
-    function closeAttractionModal() {
-        document.getElementById('attractionModal').style.display = 'none';
     }
 
     // Сохранить достопримечательность
@@ -303,6 +376,15 @@
             order: order,
             layout: layout
         };
+        
+        // Добавляем VK кнопку только для блока с id=5
+        if (id == 5) {
+            data.vk_button = {
+                show: document.getElementById('vkButtonShow').checked,
+                text: document.getElementById('vkButtonText').value,
+                link: document.getElementById('vkButtonLink').value
+            };
+        }
         
         const url = id ? `/admin/attractions/${id}` : '/admin/attractions';
         const method = id ? 'PUT' : 'POST';
@@ -356,7 +438,7 @@
     function manageAttractionImages(id) {
         currentAttractionId = id;
         
-        fetch('/admin/attractions?format=json', {  // Добавлен параметр format=json
+        fetch('/admin/attractions?format=json', {
             headers: {
                 'Accept': 'application/json'
             }
@@ -390,7 +472,7 @@
         const container = document.getElementById('attractionImagesList');
         container.innerHTML = '<div style="text-align: center; padding: 20px;"><div class="loading"></div><p>Загрузка изображений...</p></div>';
         
-        fetch('/admin/attractions?format=json', {  // Добавлен параметр format=json
+        fetch('/admin/attractions?format=json', {
             headers: {
                 'Accept': 'application/json'
             }
@@ -413,7 +495,7 @@
         });
     }
 
-    // Отобразить изображения
+    // Обновляем функцию renderAttractionImages
     function renderAttractionImages(images) {
         const container = document.getElementById('attractionImagesList');
         
@@ -495,20 +577,47 @@
     function deleteAttractionImage(filename) {
         if (!confirm('Удалить это изображение?')) return;
         
-        fetch(`/admin/attractions/${currentAttractionId}/images/${encodeURIComponent(filename)}`, {
-            method: 'DELETE'
+        console.log('Отправка запроса на удаление:', filename);
+        
+        fetch(`/admin/attractions/${currentAttractionId}/images/delete`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({ filename: filename })
         })
-        .then(response => response.json())
+        .then(response => {
+            console.log('Статус ответа:', response.status);
+            
+            const contentType = response.headers.get('content-type');
+            if (contentType && contentType.includes('application/json')) {
+                return response.json();
+            } else {
+                return response.text().then(text => {
+                    console.error('Ответ не в формате JSON:', text.substring(0, 500));
+                    throw new Error('Сервер вернул не JSON: ' + response.status + ' - ' + text.substring(0, 100));
+                });
+            }
+        })
         .then(data => {
+            console.log('Получен ответ:', data);
             if (data.success) {
                 showNotification('Изображение удалено', 'success');
                 loadAttractionImages(currentAttractionId);
             } else {
-                showNotification('Ошибка: ' + data.message, 'error');
+                if (data.requires_login) {
+                    showNotification('Требуется авторизация. Пожалуйста, войдите снова.', 'error');
+                    window.location.href = '/login';
+                } else {
+                    showNotification('Ошибка: ' + data.message, 'error');
+                }
             }
         })
         .catch(error => {
-            showNotification('Ошибка сети: ' + error.message, 'error');
+            console.error('Ошибка сети:', error);
+            showNotification('Ошибка: ' + error.message, 'error');
         });
     }
 
@@ -571,7 +680,7 @@
             
             <div class="form-group">
                 <label for="attractionDetailed">Подробное описание</label>
-                <textarea id="attractionDetailed" rows="6" placeholder="Подробное описание (отображается в попапе)"></textarea>
+                <textarea id="attractionDetailed" rows="6" placeholder="Подробное описание (отображается в попапе). Если оставить пустым, кнопка 'Подробнее' не будет показана."></textarea>
                 <div class="char-counter">0/2000</div>
             </div>
             
@@ -592,6 +701,28 @@
             <div class="form-group">
                 <label>Порядок отображения</label>
                 <input type="number" id="attractionOrder" min="1" value="1">
+            </div>
+            
+            <!-- Поля для VK кнопки (только для блока с id=5) -->
+            <div id="vkButtonFields" style="display: none; border-top: 1px solid #e2e8f0; padding-top: 20px; margin-top: 20px;">
+                <h3 style="margin-bottom: 15px; color: #2d3748;">Настройки кнопки VK (только для блока "Оленья ферма")</h3>
+                
+                <div class="form-group">
+                    <label style="display: flex; align-items: center; gap: 10px;">
+                        <input type="checkbox" id="vkButtonShow">
+                        <span>Показывать кнопку VK</span>
+                    </label>
+                </div>
+                
+                <div class="form-group">
+                    <label for="vkButtonText">Текст кнопки</label>
+                    <input type="text" id="vkButtonText" placeholder="Введите текст кнопки" value="Группа VK">
+                </div>
+                
+                <div class="form-group">
+                    <label for="vkButtonLink">Ссылка на группу VK</label>
+                    <input type="url" id="vkButtonLink" placeholder="https://vk.com/..." value="https://vk.com/dolina_waterfalls">
+                </div>
             </div>
             
             <div class="form-actions">

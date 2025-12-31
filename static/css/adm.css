@@ -553,6 +553,16 @@
     animation: modalFadeIn 0.3s ease-out;
 }
 
+/* Стили для VK кнопки в админ-панели */
+#vkButtonFields h3 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #2d3748;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #e2e8f0;
+}
+
 /* Адаптивность */
 @media (max-width: 768px) {
     .admin-header {

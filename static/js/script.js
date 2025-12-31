@@ -624,19 +624,22 @@ const ModalManager = {
         }
     },
 
-    openTextModal(title, text) {
-        if (STATE.isModalOpen) return;
-        
-        const titleElement = document.getElementById('textModalTitle');
-        const bodyElement = document.getElementById('textModalBody');
-        
-        if (titleElement && bodyElement && DOM.modals.text) {
-            titleElement.textContent = title;
-            bodyElement.textContent = text;
-            DOM.modals.text.style.display = 'flex';
-            DOM.modals.text.setAttribute('aria-hidden', 'false');
+    openTextModal(title, description) {
+        try {
+            // Если description это JSON строка, парсим ее
+            if (description && description.trim().startsWith('"') && description.trim().endsWith('"')) {
+                description = JSON.parse(description);
+            }
+            
+            document.getElementById('textModalTitle').textContent = title;
+            document.getElementById('textModalBody').innerHTML = '<p>' + description + '</p>';
+            document.getElementById('textModal').style.display = 'block';
             document.body.style.overflow = 'hidden';
-            STATE.isModalOpen = true;
+        } catch (e) {
+            console.error('Ошибка при открытии модального окна:', e);
+            document.getElementById('textModalBody').innerHTML = '<p style="color: #e53e3e;">Ошибка загрузки описания</p>';
+            document.getElementById('textModal').style.display = 'block';
+            document.body.style.overflow = 'hidden';
         }
     },
 

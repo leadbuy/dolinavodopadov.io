@@ -227,7 +227,23 @@
             <div class="text-content">
                 <h2>{{ attraction.title }}</h2>
                 <p>{{ attraction.description }}</p>
-                <button class="read-more-btn" onclick="openTextModal('{{ attraction.title }}', '{{ attraction.detailed_description }}')">Подробнее</button>
+                
+                <!-- Кнопки достопримечательности -->
+                <div class="attraction-buttons">
+                    {% if attraction.detailed_description %}
+                    <button class="read-more-btn" onclick="openTextModal('{{ attraction.title|replace("'", "\\'") }}', '{{ attraction.detailed_description|replace("'", "\\'") }}')">
+                        Подробнее
+                    </button>
+                    {% endif %}
+                    
+                    {% if attraction.id == 5 and attraction.vk_button and attraction.vk_button.show %}
+                    <a href="{{ attraction.vk_button.link }}" 
+                    target="_blank" 
+                    class="vk-button">
+                        {{ attraction.vk_button.text }}
+                    </a>
+                    {% endif %}
+                </div>
             </div>
             <div class="gallery-content">
                 <div class="image-gallery" data-gallery="{{ attraction.id }}">
@@ -679,11 +695,6 @@
 
     <!-- Скрипт в конце body для лучшей производительности -->
     <script src="{{ url_for('static', filename='js/') }}script.js" defer></script>
-    
-    <div class="admin-link" style="text-align: center; margin-top: 20px; opacity: 0.5;">
-        <a href="/login" style="color: #718096; text-decoration: none; font-size: 12px;">
-            Админ-панель
-        </a>
-    </div>                  
+               
 </body>
 </html>

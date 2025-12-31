@@ -7,6 +7,7 @@ import uuid
 from werkzeug.utils import secure_filename
 import shutil
 
+
 app = Flask(__name__)
 app.secret_key = 'dolina_waterfalls_secret_key_2025'
 
@@ -69,11 +70,20 @@ def load_attractions():
         return []
 
 def save_attractions(attractions):
-    """Сохранение данных достопримечательностей"""
+    """Сохранение данных достопримечательностей (без изображений)"""
     try:
-        print(f"Сохранение {len(attractions)} достопримечательностей в {ATTRACTIONS_FILE}")
+        # Создаем копию без изображений для сохранения
+        attractions_to_save = []
+        for attraction in attractions:
+            attraction_copy = attraction.copy()
+            # Удаляем поле images из JSON, так как они хранятся в файловой системе
+            if 'images' in attraction_copy:
+                del attraction_copy['images']
+            attractions_to_save.append(attraction_copy)
+        
+        print(f"Сохранение {len(attractions_to_save)} достопримечательностей в {ATTRACTIONS_FILE}")
         with open(ATTRACTIONS_FILE, 'w', encoding='utf-8') as f:
-            json.dump(attractions, f, ensure_ascii=False, indent=2)
+            json.dump(attractions_to_save, f, ensure_ascii=False, indent=2)
         
         # Проверяем, что файл был сохранен
         if os.path.exists(ATTRACTIONS_FILE):
@@ -98,14 +108,31 @@ def load_attractions():
         with open(ATTRACTIONS_FILE, 'r', encoding='utf-8') as f:
             data = json.load(f)
             print(f"Загружено {len(data)} достопримечательностей")
+            
+            # Добавляем изображения из папок
+            for attraction in data:
+                attraction_id = attraction.get('id')
+                if attraction_id:
+                    # Получаем изображения из папки
+                    attraction['images'] = get_attraction_images(attraction_id)
+            
             return data
     except Exception as e:
         print(f"Ошибка при загрузке достопримечательностей: {e}")
         return []
 
-def get_attraction_images(folder):
-    """Получение списка изображений для достопримечательности"""
-    images_dir = os.path.join(app.static_folder, 'images', 'attraction-block', folder)
+def get_next_attraction_id():
+    """Получить следующий ID для новой достопримечательности"""
+    attractions = load_attractions()
+    if not attractions:
+        return 1
+    max_id = max(attraction.get('id', 0) for attraction in attractions)
+    return max_id + 1
+
+def get_attraction_images(attraction_id):
+    """Получение списка изображений для достопримечательности из папки"""
+    folder_name = f"block-{attraction_id}"
+    images_dir = os.path.join(app.static_folder, 'images', 'attraction-block', folder_name)
     images = []
     
     if os.path.exists(images_dir):
@@ -462,20 +489,21 @@ def create_attraction():
 @login_required
 def admin_attractions():
     """Обработка достопримечательностей - возвращает JSON или HTML в зависимости от заголовков"""
-    if request.headers.get('Accept') == 'application/json' or request.args.get('format') == 'json':
+    if 'application/json' in request.headers.get('Accept', '') or request.args.get('format') == 'json':
         # Если клиент хочет JSON
         try:
             attractions = load_attractions()
             attractions.sort(key=lambda x: x.get('order', 0))
             
             for attraction in attractions:
-                folder = attraction.get('folder', '')
-                if folder:
-                    attraction['images_list'] = get_attraction_images(folder)
+                attraction_id = attraction.get('id')
+                if attraction_id:
+                    # Получаем изображения из папки
+                    attraction['images_list'] = get_attraction_images(attraction_id)
             
             return jsonify({'success': True, 'attractions': attractions})
         except Exception as e:
-            print(f"Ошибка: {e}")
+            print(f"Ошибка при загрузке достопримечательностей: {e}")
             return jsonify({'success': False, 'message': f'Ошибка сервера: {str(e)}'}), 500
     else:
         # Иначе возвращаем HTML страницу
@@ -493,10 +521,21 @@ def update_attraction(attraction_id):
         # Находим достопримечательность
         for i, attraction in enumerate(attractions):
             if attraction['id'] == attraction_id:
-                # Обновляем поля
+                # Обновляем основные поля
                 for key in ['title', 'description', 'detailed_description', 'layout', 'order']:
                     if key in data:
                         attractions[i][key] = data[key]
+                
+                # Обновляем VK кнопку только для блока с id=5
+                if attraction_id == 5 and 'vk_button' in data:
+                    attractions[i]['vk_button'] = data['vk_button']
+                elif attraction_id == 5 and 'vk_button' not in attractions[i]:
+                    # Если это блок 5 и нет vk_button, создаем по умолчанию
+                    attractions[i]['vk_button'] = {
+                        'show': False,
+                        'text': 'Группа VK',
+                        'link': ''
+                    }
                 
                 if save_attractions(attractions):
                     return jsonify({'success': True, 'message': 'Достопримечательность обновлена'})
@@ -592,49 +631,20 @@ def upload_attraction_image(attraction_id):
         if not allowed_file(file.filename):
             return jsonify({'success': False, 'message': 'Неподдерживаемый формат'})
         
-        # Получаем информацию о достопримечательности
-        attractions = load_attractions()
-        folder_name = None
-        attraction_index = -1
-        
-        for i, attraction in enumerate(attractions):
-            if attraction['id'] == attraction_id:
-                folder_name = attraction.get('folder', '')
-                attraction_index = i
-                break
-        
-        if not folder_name:
-            return jsonify({'success': False, 'message': 'Достопримечательность не найдена'})
-        
         # Создаем безопасное имя файла
         original_filename = secure_filename(file.filename)
         name, ext = os.path.splitext(original_filename)
         unique_filename = f"{name}_{uuid.uuid4().hex[:8]}{ext}"
         
-        # Сохраняем файл
+        # Сохраняем файл в папку блока
+        folder_name = f"block-{attraction_id}"
         upload_folder = os.path.join(app.static_folder, 'images', 'attraction-block', folder_name)
         os.makedirs(upload_folder, exist_ok=True)
         
         file_path = os.path.join(upload_folder, unique_filename)
         file.save(file_path)
         
-        # Обновляем список изображений в данных
-        if attraction_index != -1:
-            if 'images' not in attractions[attraction_index]:
-                attractions[attraction_index]['images'] = []
-            
-            # Добавляем только если такого файла еще нет
-            if unique_filename not in attractions[attraction_index]['images']:
-                attractions[attraction_index]['images'].append(unique_filename)
-                
-                # Сохраняем изменения
-                if save_attractions(attractions):
-                    print(f"Добавлено изображение {unique_filename} для достопримечательности {attraction_id}")
-                    print(f"Теперь изображения: {attractions[attraction_index]['images']}")
-                else:
-                    return jsonify({'success': False, 'message': 'Ошибка при сохранении данных'})
-            else:
-                print(f"Изображение {unique_filename} уже существует в списке")
+        print(f"Изображение сохранено в папку: {file_path}")
         
         return jsonify({
             'success': True, 
@@ -646,44 +656,73 @@ def upload_attraction_image(attraction_id):
         print(f"Ошибка при загрузке изображения: {e}")
         return jsonify({'success': False, 'message': f'Ошибка: {str(e)}'})
 
-@app.route('/admin/attractions/<int:attraction_id>/images/<filename>', methods=['DELETE'])
+@app.route('/admin/attractions/<int:attraction_id>/images/delete', methods=['POST'])
 @login_required
-def delete_attraction_image(attraction_id, filename):
-    """Удаление изображения достопримечательности"""
+def delete_attraction_image(attraction_id):
+    """Удаление изображения достопримечательности (POST метод)"""
     try:
+        print(f"DEBUG: Удаление изображения для достопримечательности {attraction_id}")
+        
+        # Получаем данные из JSON тела запроса
+        data = request.get_json()
+        if not data or 'filename' not in data:
+            return jsonify({'success': False, 'message': 'Не указано имя файла'})
+        
+        filename = data.get('filename')
+        print(f"DEBUG: Имя файла для удаления: {filename}")
+        
+        # Получаем папку для достопримечательности из JSON
         attractions = load_attractions()
         folder_name = None
         
-        # Находим папку достопримечательности
         for attraction in attractions:
             if attraction['id'] == attraction_id:
-                folder_name = attraction.get('folder', '')
+                folder_name = attraction.get('folder')
+                print(f"DEBUG: Найдена папка в JSON: {folder_name}")
                 break
         
+        # Если папка не найдена в JSON, создаем имя по умолчанию
         if not folder_name:
-            return jsonify({'success': False, 'message': 'Достопримечательность не найдена'})
+            folder_name = f"block-{attraction_id}"
+            print(f"DEBUG: Используем папку по умолчанию: {folder_name}")
+        
+        # Безопасное имя файла
+        safe_filename = secure_filename(filename)
+        print(f"DEBUG: Безопасное имя файла: {safe_filename}")
         
         # Удаляем файл
-        file_path = os.path.join(app.static_folder, 'images', 'attraction-block', folder_name, secure_filename(filename))
+        file_path = os.path.join(app.static_folder, 'images', 'attraction-block', folder_name, safe_filename)
+        print(f"DEBUG: Полный путь к файлу: {file_path}")
+        print(f"DEBUG: Существует ли файл: {os.path.exists(file_path)}")
         
         if os.path.exists(file_path):
             os.remove(file_path)
-            
-            # Удаляем из списка изображений
-            for i, attraction in enumerate(attractions):
-                if attraction['id'] == attraction_id and 'images' in attractions[i]:
-                    if filename in attractions[i]['images']:
-                        attractions[i]['images'].remove(filename)
-                        break
-            
-            save_attractions(attractions)
+            print(f"Изображение удалено: {file_path}")
             return jsonify({'success': True, 'message': 'Изображение удалено'})
         else:
-            return jsonify({'success': False, 'message': 'Файл не найден'})
+            # Проверяем альтернативные варианты имени файла
+            print(f"DEBUG: Файл не найден. Проверяем альтернативные варианты...")
+            
+            # Проверяем оригинальное имя файла
+            alt_path = os.path.join(app.static_folder, 'images', 'attraction-block', folder_name, filename)
+            if os.path.exists(alt_path):
+                os.remove(alt_path)
+                return jsonify({'success': True, 'message': 'Изображение удалено (оригинальное имя)'})
+            
+            # Список файлов в папке для отладки
+            folder_path = os.path.join(app.static_folder, 'images', 'attraction-block', folder_name)
+            if os.path.exists(folder_path):
+                files_in_folder = os.listdir(folder_path)
+                print(f"DEBUG: Файлы в папке {folder_path}: {files_in_folder}")
+            
+            return jsonify({'success': False, 'message': f'Файл не найден: {safe_filename}'})
             
     except Exception as e:
+        print(f"Ошибка при удалении изображения: {e}")
+        import traceback
+        traceback.print_exc()
         return jsonify({'success': False, 'message': f'Ошибка: {str(e)}'})
-
+        
 # Маршруты для галереи (эти маршруты должны быть публичными)
 @app.route('/gallery-data')
 def get_gallery_data():
