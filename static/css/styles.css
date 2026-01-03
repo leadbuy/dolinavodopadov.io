@@ -573,8 +573,11 @@ s
     color: white;
 }
 
+.activities-grid a {
+    text-decoration: none;
+}
+
 /* Блок "О нас" */
-/* Блок "О нас" - обновленные стили */
 .about-section {
     padding: 100px 20px;
     background: var(--bg-light);
@@ -2221,7 +2224,7 @@ s
     }
     
     .card-title {
-        font-size: 1.2rem;
+        font-size: 1.6rem;
     }
     
     .price-amount {
@@ -2378,7 +2381,7 @@ s
     }
     
     .card-title {
-        font-size: 1rem;
+        font-size: 1.6rem;
     }
     
     .price-amount {
@@ -2583,6 +2586,48 @@ s
         margin: 0;
         flex-grow: 1;
     }
+
+    .attraction-block .text-content h2 {
+    text-align: center;
+    width: 100%;
+    margin-bottom: 20px;
+    }
+
+    .attraction-block .text-content p {
+        text-align: center;
+        width: 100%;
+        margin-bottom: 25px;
+    }
+
+    /* Центрирование кнопок */
+    .attraction-buttons {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+        width: 100%;
+        margin-top: 10px;
+    }
+
+    .read-more-btn {
+        align-self: center;
+        width: 100%;
+        max-width: 280px;
+        text-align: center;
+        margin: 0;
+    }
+
+    .vk-button {
+        align-self: center;
+        width: 100%;
+        max-width: 280px;
+        text-align: center;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 0;
+    }
+
 }
 
 /* Для очень маленьких экранов */

@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="./static/images/logo/favicon.png" type="image/x-icon">
     <title>{{ page_data.hero.title}}</title>
     <meta name="description" content="{{ page_data.hero.description if page_data.hero else 'Путешествие в Карелию: Парк природы «Долина Водопадов»' }}">
     
@@ -145,76 +146,98 @@
             <div class="activities-section">
                 <h3 class="activities-title">Чем можно заняться в парке</h3>
                 <div class="activities-grid">
-                    <div class="activity-item">
-                        <img src="{{ url_for('static', filename='images/icons/tropa.png') }}" 
-                            alt="Тропа" 
-                            class="activity-icon"
-                            loading="lazy">
-                        <span class="activity-label">Эко-тропа</span>
-                    </div>
-                    <div class="activity-item">
-                        <img src="{{ url_for('static', filename='images/icons/vodopady.png') }}" 
-                            alt="Водопады" 
-                            class="activity-icon"
-                            loading="lazy">
-                        <span class="activity-label">Водопады</span>
-                    </div>
-                    <div class="activity-item">
-                        <img src="{{ url_for('static', filename='images/icons/mosty.png') }}" 
-                            alt="Подвесные мосты" 
-                            class="activity-icon"
-                            loading="lazy">
-                        <span class="activity-label">Подвесные мосты</span>
-                    </div>
-                    <div class="activity-item">
-                        <img src="{{ url_for('static', filename='images/icons/kormlenie.png') }}" 
-                            alt="Кормление с рук оленей и лосей" 
-                            class="activity-icon"
-                            loading="lazy">
-                        <span class="activity-label">Кормление с рук оленей и лосей</span>
-                    </div>
-                    <div class="activity-item">
-                        <img src="{{ url_for('static', filename='images/icons/obshchenie.png') }}" 
-                            alt="Общение с хаски и лошадьми" 
-                            class="activity-icon"
-                            loading="lazy">
-                        <span class="activity-label">Общение с хаски и лошадьми</span>
-                    </div>
-                    <div class="activity-item">
-                        <img src="{{ url_for('static', filename='images/icons/kuznica.png') }}" 
-                            alt="Кузница" 
-                            class="activity-icon"
-                            loading="lazy">
-                        <span class="activity-label">Кузница</span>
-                    </div>
-                    <div class="activity-item">
-                        <img src="{{ url_for('static', filename='images/icons/museum.png') }}" 
-                            alt="Музей" 
-                            class="activity-icon"
-                            loading="lazy">
-                        <span class="activity-label">Музей</span>
-                    </div>
-                    <div class="activity-item">
-                        <img src="{{ url_for('static', filename='images/icons/cafe.png') }}" 
-                            alt="Кафе" 
-                            class="activity-icon"
-                            loading="lazy">
-                        <span class="activity-label">Кафе</span>
-                    </div>
-                    <div class="activity-item">
-                        <img src="{{ url_for('static', filename='images/icons/verevochnyi-park.png') }}" 
-                            alt="Веревочный парк" 
-                            class="activity-icon"
-                            loading="lazy">
-                        <span class="activity-label">Веревочный парк</span>
-                    </div>
-                    <div class="activity-item">
-                        <img src="{{ url_for('static', filename='images/icons/tea.png') }}" 
-                            alt="Чай Иван-чай на костре" 
-                            class="activity-icon"
-                            loading="lazy">
-                        <span class="activity-label">Чай Иван-чай на костре</span>
-                    </div>
+                    <a href="#attraction-1">
+                        <div class="activity-item">
+                            
+                            <img src="{{ url_for('static', filename='images/icons/tropa.png') }}" 
+                                alt="Тропа" 
+                                class="activity-icon"
+                                loading="lazy">
+                            <span class="activity-label">Эко-тропа</span>
+                            <p> </p>
+                        </div>
+                    </a>
+                    <a href="#attraction-1">
+                        <div class="activity-item">
+                            <img src="{{ url_for('static', filename='images/icons/vodopady.png') }}" 
+                                alt="Водопады" 
+                                class="activity-icon"
+                                loading="lazy">
+                            <span class="activity-label">Водопады</span>
+                        </div>
+                    </a>
+                    <a href="#attraction-3">
+                        <div class="activity-item">
+                            <img src="{{ url_for('static', filename='images/icons/mosty.png') }}" 
+                                alt="Подвесные мосты" 
+                                class="activity-icon"
+                                loading="lazy">
+                            <span class="activity-label">Подвесные мосты</span>
+                        </div>
+                    </a>
+                    <a href="#attraction-5">
+                        <div class="activity-item">
+                            <img src="{{ url_for('static', filename='images/icons/kormlenie.png') }}" 
+                                alt="Кормление с рук оленей и лосей" 
+                                class="activity-icon"
+                                loading="lazy">
+                            <span class="activity-label">Кормление с рук оленей и лосей</span>
+                        </div>
+                    </a>
+                    <a href="#attraction-5">
+                        <div class="activity-item">
+                            <img src="{{ url_for('static', filename='images/icons/obshchenie.png') }}" 
+                                alt="Общение с хаски и лошадьми" 
+                                class="activity-icon"
+                                loading="lazy">
+                            <span class="activity-label">Общение с хаски и лошадьми</span>
+                        </div>
+                    </a>
+                    <a href="#attraction-5">
+                        <div class="activity-item">
+                            <img src="{{ url_for('static', filename='images/icons/kuznica.png') }}" 
+                                alt="Кузница" 
+                                class="activity-icon"
+                                loading="lazy">
+                            <span class="activity-label">Кузница</span>
+                        </div>
+                    </a>
+                    <a href="#attraction-5">
+                        <div class="activity-item">
+                            <img src="{{ url_for('static', filename='images/icons/museum.png') }}" 
+                                alt="Музей" 
+                                class="activity-icon"
+                                loading="lazy">
+                            <span class="activity-label">Музей</span>
+                        </div>
+                    </a>
+                    <a href="#attraction-6">
+                        <div class="activity-item">
+                            <img src="{{ url_for('static', filename='images/icons/cafe.png') }}" 
+                                alt="Кафе" 
+                                class="activity-icon"
+                                loading="lazy">
+                            <span class="activity-label">Кафе</span>
+                        </div>
+                    </a>
+                    <a href="#attraction-8">
+                        <div class="activity-item">
+                            <img src="{{ url_for('static', filename='images/icons/verevochnyi-park.png') }}" 
+                                alt="Веревочный парк" 
+                                class="activity-icon"
+                                loading="lazy">
+                            <span class="activity-label">Веревочный парк</span>
+                        </div>
+                    </a>
+                    <a href="#attraction-5">
+                        <div class="activity-item">
+                            <img src="{{ url_for('static', filename='images/icons/tea.png') }}" 
+                                alt="Чай Иван-чай на костре" 
+                                class="activity-icon"
+                                loading="lazy">
+                            <span class="activity-label">Чай Иван-чай на костре</span>
+                        </div>
+                    </a>
                 </div>
             </div>
         </div>
@@ -223,7 +246,8 @@
     <!-- Достопримечательности -->
     <section id="places" class="attractions-section">
         {% for attraction in attractions %}
-        <div class="attraction-block {{ 'reverse' if attraction.layout == 'text_right' else '' }}">
+        <!-- Добавляем id с номером достопримечательности -->
+        <div class="attraction-block {{ 'reverse' if attraction.layout == 'text_right' else '' }}" id="attraction-{{ attraction.id }}">
             <div class="text-content">
                 <h2>{{ attraction.title }}</h2>
                 <p>{{ attraction.description }}</p>
@@ -433,11 +457,11 @@
                         <div class="card-prices">
                             <div class="price-item">
                                 <span class="price-label">ВЗРОСЛЫЙ</span>
-                                <span class="price-amount">1250 ₽</span>
+                                <span class="price-amount">1500 ₽</span>
                             </div>
                             <div class="price-item">
                                 <span class="price-label">ЛЬГОТНЫЙ</span>
-                                <span class="price-amount">1000 ₽</span>
+                                <span class="price-amount">1200 ₽</span>
                             </div>
                         </div>
                         
@@ -466,11 +490,11 @@
                         <div class="card-prices">
                             <div class="price-item">
                                 <span class="price-label">ВЗРОСЛЫЙ</span>
-                                <span class="price-amount">500 ₽</span>
+                                <span class="price-amount">600 ₽</span>
                             </div>
                             <div class="price-item">
                                 <span class="price-label">ЛЬГОТНЫЙ</span>
-                                <span class="price-amount">450 ₽</span>
+                                <span class="price-amount">500 ₽</span>
                             </div>
                         </div>
                     </div>
@@ -491,11 +515,11 @@
                         <div class="card-prices">
                             <div class="price-item">
                                 <span class="price-label">ВЗРОСЛЫЙ</span>
-                                <span class="price-amount">400 ₽</span>
+                                <span class="price-amount">600 ₽</span>
                             </div>
                             <div class="price-item">
                                 <span class="price-label">ЛЬГОТНЫЙ</span>
-                                <span class="price-amount">300 ₽</span>
+                                <span class="price-amount">500 ₽</span>
                             </div>
                         </div>
                     </div>
